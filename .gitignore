@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build output
+frontend/dist/
+frontend/build/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Database & Logs
+*.sql
+*.log
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,1970 @@
+{
+  "GDSS_Pemilihan_Calon_Presiden_SAW_Borda_Voting.xlsx": {
+    "sha256": "2079a3ba97382f6721986f72928d0c804650931e474ad57fca0f8fa43bae2657",
+    "sheets": {
+      "Penilaian Ketua Panel": [
+        {
+          "cell": "B2",
+          "value": "1. Tabel Kriteria dan Bobot Kriteria",
+          "cached": "1. Tabel Kriteria dan Bobot Kriteria"
+        },
+        {
+          "cell": "F2",
+          "value": "2. Matriks Keputusan Penilaian dari Ketua Panel",
+          "cached": "2. Matriks Keputusan Penilaian dari Ketua Panel"
+        },
+        {
+          "cell": "B3",
+          "value": "Kriteria",
+          "cached": "Kriteria"
+        },
+        {
+          "cell": "C3",
+          "value": "Deskripsi",
+          "cached": "Deskripsi"
+        },
+        {
+          "cell": "D3",
+          "value": "Bobot (w)",
+          "cached": "Bobot (w)"
+        },
+        {
+          "cell": "G3",
+          "value": "C1",
+          "cached": "C1"
+        },
+        {
+          "cell": "H3",
+          "value": "C2",
+          "cached": "C2"
+        },
+        {
+          "cell": "I3",
+          "value": "C3",
+          "cached": "C3"
+        },
+        {
+          "cell": "J3",
+          "value": "C4",
+          "cached": "C4"
+        },
+        {
+          "cell": "B4",
+          "value": "C1",
+          "cached": "C1"
+        },
+        {
+          "cell": "C4",
+          "value": "Pengalaman kepemimpinan",
+          "cached": "Pengalaman kepemimpinan"
+        },
+        {
+          "cell": "D4",
+          "value": 25,
+          "cached": 25
+        },
+        {
+          "cell": "F4",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "G4",
+          "value": 5,
+          "cached": 5
+        },
+        {
+          "cell": "H4",
+          "value": 5,
+          "cached": 5
+        },
+        {
+          "cell": "I4",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "J4",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "B5",
+          "value": "C2",
+          "cached": "C2"
+        },
+        {
+          "cell": "C5",
+          "value": "Kejelasan program kerja",
+          "cached": "Kejelasan program kerja"
+        },
+        {
+          "cell": "D5",
+          "value": 30,
+          "cached": 30
+        },
+        {
+          "cell": "F5",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "G5",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "H5",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "I5",
+          "value": 5,
+          "cached": 5
+        },
+        {
+          "cell": "J5",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "B6",
+          "value": "C3",
+          "cached": "C3"
+        },
+        {
+          "cell": "C6",
+          "value": "Rekam jejak kegiatan",
+          "cached": "Rekam jejak kegiatan"
+        },
+        {
+          "cell": "D6",
+          "value": 25,
+          "cached": 25
+        },
+        {
+          "cell": "F6",
+          "value": "Kandidat C",
+          "cached": "Kandidat C"
+        },
+        {
+          "cell": "G6",
+          "value": 3,
+          "cached": 3
+        },
+        {
+          "cell": "H6",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "I6",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "J6",
+          "value": 5,
+          "cached": 5
+        },
+        {
+          "cell": "B7",
+          "value": "C4",
+          "cached": "C4"
+        },
+        {
+          "cell": "C7",
+          "value": "Kemampuan komunikasi",
+          "cached": "Kemampuan komunikasi"
+        },
+        {
+          "cell": "D7",
+          "value": 20,
+          "cached": 20
+        },
+        {
+          "cell": "F9",
+          "value": "3. Matriks Keputusan Ternormalisasi",
+          "cached": "3. Matriks Keputusan Ternormalisasi"
+        },
+        {
+          "cell": "G10",
+          "value": "C1",
+          "cached": "C1"
+        },
+        {
+          "cell": "H10",
+          "value": "C2",
+          "cached": "C2"
+        },
+        {
+          "cell": "I10",
+          "value": "C3",
+          "cached": "C3"
+        },
+        {
+          "cell": "J10",
+          "value": "C4",
+          "cached": "C4"
+        },
+        {
+          "cell": "F11",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "G11",
+          "value": "=G4/MAX(G$4:G$6)",
+          "cached": 1
+        },
+        {
+          "cell": "H11",
+          "value": "=H4/MAX(H$4:H$6)",
+          "cached": 1
+        },
+        {
+          "cell": "I11",
+          "value": "=I4/MAX(I$4:I$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "J11",
+          "value": "=J4/MAX(J$4:J$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "F12",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "G12",
+          "value": "=G5/MAX(G$4:G$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "H12",
+          "value": "=H5/MAX(H$4:H$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "I12",
+          "value": "=I5/MAX(I$4:I$6)",
+          "cached": 1
+        },
+        {
+          "cell": "J12",
+          "value": "=J5/MAX(J$4:J$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "F13",
+          "value": "Kandidat C",
+          "cached": "Kandidat C"
+        },
+        {
+          "cell": "G13",
+          "value": "=G6/MAX(G$4:G$6)",
+          "cached": 0.6
+        },
+        {
+          "cell": "H13",
+          "value": "=H6/MAX(H$4:H$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "I13",
+          "value": "=I6/MAX(I$4:I$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "J13",
+          "value": "=J6/MAX(J$4:J$6)",
+          "cached": 1
+        },
+        {
+          "cell": "F16",
+          "value": "4. Matriks Keputusan Ternormalisasi Terbobot",
+          "cached": "4. Matriks Keputusan Ternormalisasi Terbobot"
+        },
+        {
+          "cell": "G17",
+          "value": "C1",
+          "cached": "C1"
+        },
+        {
+          "cell": "H17",
+          "value": "C2",
+          "cached": "C2"
+        },
+        {
+          "cell": "I17",
+          "value": "C3",
+          "cached": "C3"
+        },
+        {
+          "cell": "J17",
+          "value": "C4",
+          "cached": "C4"
+        },
+        {
+          "cell": "F18",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "G18",
+          "value": "=G11*$D$4",
+          "cached": 25
+        },
+        {
+          "cell": "H18",
+          "value": "=H11*$D$5",
+          "cached": 30
+        },
+        {
+          "cell": "I18",
+          "value": "=I11*$D$6",
+          "cached": 20
+        },
+        {
+          "cell": "J18",
+          "value": "=J11*$D$7",
+          "cached": 16
+        },
+        {
+          "cell": "F19",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "G19",
+          "value": "=G12*$D$4",
+          "cached": 20
+        },
+        {
+          "cell": "H19",
+          "value": "=H12*$D$5",
+          "cached": 24
+        },
+        {
+          "cell": "I19",
+          "value": "=I12*$D$6",
+          "cached": 25
+        },
+        {
+          "cell": "J19",
+          "value": "=J12*$D$7",
+          "cached": 16
+        },
+        {
+          "cell": "F20",
+          "value": "Kandidat C",
+          "cached": "Kandidat C"
+        },
+        {
+          "cell": "G20",
+          "value": "=G13*$D$4",
+          "cached": 15
+        },
+        {
+          "cell": "H20",
+          "value": "=H13*$D$5",
+          "cached": 24
+        },
+        {
+          "cell": "I20",
+          "value": "=I13*$D$6",
+          "cached": 20
+        },
+        {
+          "cell": "J20",
+          "value": "=J13*$D$7",
+          "cached": 20
+        },
+        {
+          "cell": "F23",
+          "value": "5. Skor Preferensi untuk Masing-masing Alternatif",
+          "cached": "5. Skor Preferensi untuk Masing-masing Alternatif"
+        },
+        {
+          "cell": "F24",
+          "value": "Alternatif",
+          "cached": "Alternatif"
+        },
+        {
+          "cell": "G24",
+          "value": "Skor Preferensi",
+          "cached": "Skor Preferensi"
+        },
+        {
+          "cell": "H24",
+          "value": "Ranking",
+          "cached": "Ranking"
+        },
+        {
+          "cell": "F25",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "G25",
+          "value": "=SUM(G18:J18)",
+          "cached": 91
+        },
+        {
+          "cell": "H25",
+          "value": "=RANK(G25,$G$25:$G$27,0)",
+          "cached": 1
+        },
+        {
+          "cell": "F26",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "G26",
+          "value": "=SUM(G19:J19)",
+          "cached": 85
+        },
+        {
+          "cell": "H26",
+          "value": "=RANK(G26,$G$25:$G$27,0)",
+          "cached": 2
+        },
+        {
+          "cell": "F27",
+          "value": "Kandidat C",
+          "cached": "Kandidat C"
+        },
+        {
+          "cell": "G27",
+          "value": "=SUM(G20:J20)",
+          "cached": 79
+        },
+        {
+          "cell": "H27",
+          "value": "=RANK(G27,$G$25:$G$27,0)",
+          "cached": 3
+        },
+        {
+          "cell": "B29",
+          "value": "Simulasi akademik: seluruh kandidat dan skor penilaian bersifat fiktif.",
+          "cached": "Simulasi akademik: seluruh kandidat dan skor penilaian bersifat fiktif."
+        }
+      ],
+      "Penilaian Anggota 1": [
+        {
+          "cell": "B2",
+          "value": "1. Tabel Kriteria dan Bobot Kriteria",
+          "cached": "1. Tabel Kriteria dan Bobot Kriteria"
+        },
+        {
+          "cell": "F2",
+          "value": "2. Matriks Keputusan Penilaian dari Anggota Panel 1",
+          "cached": "2. Matriks Keputusan Penilaian dari Anggota Panel 1"
+        },
+        {
+          "cell": "B3",
+          "value": "Kriteria",
+          "cached": "Kriteria"
+        },
+        {
+          "cell": "C3",
+          "value": "Deskripsi",
+          "cached": "Deskripsi"
+        },
+        {
+          "cell": "D3",
+          "value": "Bobot (w)",
+          "cached": "Bobot (w)"
+        },
+        {
+          "cell": "G3",
+          "value": "C1",
+          "cached": "C1"
+        },
+        {
+          "cell": "H3",
+          "value": "C2",
+          "cached": "C2"
+        },
+        {
+          "cell": "I3",
+          "value": "C3",
+          "cached": "C3"
+        },
+        {
+          "cell": "J3",
+          "value": "C4",
+          "cached": "C4"
+        },
+        {
+          "cell": "B4",
+          "value": "C1",
+          "cached": "C1"
+        },
+        {
+          "cell": "C4",
+          "value": "Pengalaman kepemimpinan",
+          "cached": "Pengalaman kepemimpinan"
+        },
+        {
+          "cell": "D4",
+          "value": 25,
+          "cached": 25
+        },
+        {
+          "cell": "F4",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "G4",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "H4",
+          "value": 5,
+          "cached": 5
+        },
+        {
+          "cell": "I4",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "J4",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "B5",
+          "value": "C2",
+          "cached": "C2"
+        },
+        {
+          "cell": "C5",
+          "value": "Kejelasan program kerja",
+          "cached": "Kejelasan program kerja"
+        },
+        {
+          "cell": "D5",
+          "value": 30,
+          "cached": 30
+        },
+        {
+          "cell": "F5",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "G5",
+          "value": 5,
+          "cached": 5
+        },
+        {
+          "cell": "H5",
+          "value": 5,
+          "cached": 5
+        },
+        {
+          "cell": "I5",
+          "value": 5,
+          "cached": 5
+        },
+        {
+          "cell": "J5",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "B6",
+          "value": "C3",
+          "cached": "C3"
+        },
+        {
+          "cell": "C6",
+          "value": "Rekam jejak kegiatan",
+          "cached": "Rekam jejak kegiatan"
+        },
+        {
+          "cell": "D6",
+          "value": 25,
+          "cached": 25
+        },
+        {
+          "cell": "F6",
+          "value": "Kandidat C",
+          "cached": "Kandidat C"
+        },
+        {
+          "cell": "G6",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "H6",
+          "value": 3,
+          "cached": 3
+        },
+        {
+          "cell": "I6",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "J6",
+          "value": 5,
+          "cached": 5
+        },
+        {
+          "cell": "B7",
+          "value": "C4",
+          "cached": "C4"
+        },
+        {
+          "cell": "C7",
+          "value": "Kemampuan komunikasi",
+          "cached": "Kemampuan komunikasi"
+        },
+        {
+          "cell": "D7",
+          "value": 20,
+          "cached": 20
+        },
+        {
+          "cell": "F9",
+          "value": "3. Matriks Keputusan Ternormalisasi",
+          "cached": "3. Matriks Keputusan Ternormalisasi"
+        },
+        {
+          "cell": "G10",
+          "value": "C1",
+          "cached": "C1"
+        },
+        {
+          "cell": "H10",
+          "value": "C2",
+          "cached": "C2"
+        },
+        {
+          "cell": "I10",
+          "value": "C3",
+          "cached": "C3"
+        },
+        {
+          "cell": "J10",
+          "value": "C4",
+          "cached": "C4"
+        },
+        {
+          "cell": "F11",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "G11",
+          "value": "=G4/MAX(G$4:G$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "H11",
+          "value": "=H4/MAX(H$4:H$6)",
+          "cached": 1
+        },
+        {
+          "cell": "I11",
+          "value": "=I4/MAX(I$4:I$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "J11",
+          "value": "=J4/MAX(J$4:J$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "F12",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "G12",
+          "value": "=G5/MAX(G$4:G$6)",
+          "cached": 1
+        },
+        {
+          "cell": "H12",
+          "value": "=H5/MAX(H$4:H$6)",
+          "cached": 1
+        },
+        {
+          "cell": "I12",
+          "value": "=I5/MAX(I$4:I$6)",
+          "cached": 1
+        },
+        {
+          "cell": "J12",
+          "value": "=J5/MAX(J$4:J$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "F13",
+          "value": "Kandidat C",
+          "cached": "Kandidat C"
+        },
+        {
+          "cell": "G13",
+          "value": "=G6/MAX(G$4:G$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "H13",
+          "value": "=H6/MAX(H$4:H$6)",
+          "cached": 0.6
+        },
+        {
+          "cell": "I13",
+          "value": "=I6/MAX(I$4:I$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "J13",
+          "value": "=J6/MAX(J$4:J$6)",
+          "cached": 1
+        },
+        {
+          "cell": "F16",
+          "value": "4. Matriks Keputusan Ternormalisasi Terbobot",
+          "cached": "4. Matriks Keputusan Ternormalisasi Terbobot"
+        },
+        {
+          "cell": "G17",
+          "value": "C1",
+          "cached": "C1"
+        },
+        {
+          "cell": "H17",
+          "value": "C2",
+          "cached": "C2"
+        },
+        {
+          "cell": "I17",
+          "value": "C3",
+          "cached": "C3"
+        },
+        {
+          "cell": "J17",
+          "value": "C4",
+          "cached": "C4"
+        },
+        {
+          "cell": "F18",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "G18",
+          "value": "=G11*$D$4",
+          "cached": 20
+        },
+        {
+          "cell": "H18",
+          "value": "=H11*$D$5",
+          "cached": 30
+        },
+        {
+          "cell": "I18",
+          "value": "=I11*$D$6",
+          "cached": 20
+        },
+        {
+          "cell": "J18",
+          "value": "=J11*$D$7",
+          "cached": 16
+        },
+        {
+          "cell": "F19",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "G19",
+          "value": "=G12*$D$4",
+          "cached": 25
+        },
+        {
+          "cell": "H19",
+          "value": "=H12*$D$5",
+          "cached": 30
+        },
+        {
+          "cell": "I19",
+          "value": "=I12*$D$6",
+          "cached": 25
+        },
+        {
+          "cell": "J19",
+          "value": "=J12*$D$7",
+          "cached": 16
+        },
+        {
+          "cell": "F20",
+          "value": "Kandidat C",
+          "cached": "Kandidat C"
+        },
+        {
+          "cell": "G20",
+          "value": "=G13*$D$4",
+          "cached": 20
+        },
+        {
+          "cell": "H20",
+          "value": "=H13*$D$5",
+          "cached": 18
+        },
+        {
+          "cell": "I20",
+          "value": "=I13*$D$6",
+          "cached": 20
+        },
+        {
+          "cell": "J20",
+          "value": "=J13*$D$7",
+          "cached": 20
+        },
+        {
+          "cell": "F23",
+          "value": "5. Skor Preferensi untuk Masing-masing Alternatif",
+          "cached": "5. Skor Preferensi untuk Masing-masing Alternatif"
+        },
+        {
+          "cell": "F24",
+          "value": "Alternatif",
+          "cached": "Alternatif"
+        },
+        {
+          "cell": "G24",
+          "value": "Skor Preferensi",
+          "cached": "Skor Preferensi"
+        },
+        {
+          "cell": "H24",
+          "value": "Ranking",
+          "cached": "Ranking"
+        },
+        {
+          "cell": "F25",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "G25",
+          "value": "=SUM(G18:J18)",
+          "cached": 86
+        },
+        {
+          "cell": "H25",
+          "value": "=RANK(G25,$G$25:$G$27,0)",
+          "cached": 2
+        },
+        {
+          "cell": "F26",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "G26",
+          "value": "=SUM(G19:J19)",
+          "cached": 96
+        },
+        {
+          "cell": "H26",
+          "value": "=RANK(G26,$G$25:$G$27,0)",
+          "cached": 1
+        },
+        {
+          "cell": "F27",
+          "value": "Kandidat C",
+          "cached": "Kandidat C"
+        },
+        {
+          "cell": "G27",
+          "value": "=SUM(G20:J20)",
+          "cached": 78
+        },
+        {
+          "cell": "H27",
+          "value": "=RANK(G27,$G$25:$G$27,0)",
+          "cached": 3
+        },
+        {
+          "cell": "B29",
+          "value": "Simulasi akademik: seluruh kandidat dan skor penilaian bersifat fiktif.",
+          "cached": "Simulasi akademik: seluruh kandidat dan skor penilaian bersifat fiktif."
+        }
+      ],
+      "Penilaian Anggota 2": [
+        {
+          "cell": "B2",
+          "value": "1. Tabel Kriteria dan Bobot Kriteria",
+          "cached": "1. Tabel Kriteria dan Bobot Kriteria"
+        },
+        {
+          "cell": "F2",
+          "value": "2. Matriks Keputusan Penilaian dari Anggota Panel 2",
+          "cached": "2. Matriks Keputusan Penilaian dari Anggota Panel 2"
+        },
+        {
+          "cell": "B3",
+          "value": "Kriteria",
+          "cached": "Kriteria"
+        },
+        {
+          "cell": "C3",
+          "value": "Deskripsi",
+          "cached": "Deskripsi"
+        },
+        {
+          "cell": "D3",
+          "value": "Bobot (w)",
+          "cached": "Bobot (w)"
+        },
+        {
+          "cell": "G3",
+          "value": "C1",
+          "cached": "C1"
+        },
+        {
+          "cell": "H3",
+          "value": "C2",
+          "cached": "C2"
+        },
+        {
+          "cell": "I3",
+          "value": "C3",
+          "cached": "C3"
+        },
+        {
+          "cell": "J3",
+          "value": "C4",
+          "cached": "C4"
+        },
+        {
+          "cell": "B4",
+          "value": "C1",
+          "cached": "C1"
+        },
+        {
+          "cell": "C4",
+          "value": "Pengalaman kepemimpinan",
+          "cached": "Pengalaman kepemimpinan"
+        },
+        {
+          "cell": "D4",
+          "value": 25,
+          "cached": 25
+        },
+        {
+          "cell": "F4",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "G4",
+          "value": 5,
+          "cached": 5
+        },
+        {
+          "cell": "H4",
+          "value": 5,
+          "cached": 5
+        },
+        {
+          "cell": "I4",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "J4",
+          "value": 5,
+          "cached": 5
+        },
+        {
+          "cell": "B5",
+          "value": "C2",
+          "cached": "C2"
+        },
+        {
+          "cell": "C5",
+          "value": "Kejelasan program kerja",
+          "cached": "Kejelasan program kerja"
+        },
+        {
+          "cell": "D5",
+          "value": 30,
+          "cached": 30
+        },
+        {
+          "cell": "F5",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "G5",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "H5",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "I5",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "J5",
+          "value": 3,
+          "cached": 3
+        },
+        {
+          "cell": "B6",
+          "value": "C3",
+          "cached": "C3"
+        },
+        {
+          "cell": "C6",
+          "value": "Rekam jejak kegiatan",
+          "cached": "Rekam jejak kegiatan"
+        },
+        {
+          "cell": "D6",
+          "value": 25,
+          "cached": 25
+        },
+        {
+          "cell": "F6",
+          "value": "Kandidat C",
+          "cached": "Kandidat C"
+        },
+        {
+          "cell": "G6",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "H6",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "I6",
+          "value": 5,
+          "cached": 5
+        },
+        {
+          "cell": "J6",
+          "value": 4,
+          "cached": 4
+        },
+        {
+          "cell": "B7",
+          "value": "C4",
+          "cached": "C4"
+        },
+        {
+          "cell": "C7",
+          "value": "Kemampuan komunikasi",
+          "cached": "Kemampuan komunikasi"
+        },
+        {
+          "cell": "D7",
+          "value": 20,
+          "cached": 20
+        },
+        {
+          "cell": "F9",
+          "value": "3. Matriks Keputusan Ternormalisasi",
+          "cached": "3. Matriks Keputusan Ternormalisasi"
+        },
+        {
+          "cell": "G10",
+          "value": "C1",
+          "cached": "C1"
+        },
+        {
+          "cell": "H10",
+          "value": "C2",
+          "cached": "C2"
+        },
+        {
+          "cell": "I10",
+          "value": "C3",
+          "cached": "C3"
+        },
+        {
+          "cell": "J10",
+          "value": "C4",
+          "cached": "C4"
+        },
+        {
+          "cell": "F11",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "G11",
+          "value": "=G4/MAX(G$4:G$6)",
+          "cached": 1
+        },
+        {
+          "cell": "H11",
+          "value": "=H4/MAX(H$4:H$6)",
+          "cached": 1
+        },
+        {
+          "cell": "I11",
+          "value": "=I4/MAX(I$4:I$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "J11",
+          "value": "=J4/MAX(J$4:J$6)",
+          "cached": 1
+        },
+        {
+          "cell": "F12",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "G12",
+          "value": "=G5/MAX(G$4:G$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "H12",
+          "value": "=H5/MAX(H$4:H$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "I12",
+          "value": "=I5/MAX(I$4:I$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "J12",
+          "value": "=J5/MAX(J$4:J$6)",
+          "cached": 0.6
+        },
+        {
+          "cell": "F13",
+          "value": "Kandidat C",
+          "cached": "Kandidat C"
+        },
+        {
+          "cell": "G13",
+          "value": "=G6/MAX(G$4:G$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "H13",
+          "value": "=H6/MAX(H$4:H$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "I13",
+          "value": "=I6/MAX(I$4:I$6)",
+          "cached": 1
+        },
+        {
+          "cell": "J13",
+          "value": "=J6/MAX(J$4:J$6)",
+          "cached": 0.8
+        },
+        {
+          "cell": "F16",
+          "value": "4. Matriks Keputusan Ternormalisasi Terbobot",
+          "cached": "4. Matriks Keputusan Ternormalisasi Terbobot"
+        },
+        {
+          "cell": "G17",
+          "value": "C1",
+          "cached": "C1"
+        },
+        {
+          "cell": "H17",
+          "value": "C2",
+          "cached": "C2"
+        },
+        {
+          "cell": "I17",
+          "value": "C3",
+          "cached": "C3"
+        },
+        {
+          "cell": "J17",
+          "value": "C4",
+          "cached": "C4"
+        },
+        {
+          "cell": "F18",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "G18",
+          "value": "=G11*$D$4",
+          "cached": 25
+        },
+        {
+          "cell": "H18",
+          "value": "=H11*$D$5",
+          "cached": 30
+        },
+        {
+          "cell": "I18",
+          "value": "=I11*$D$6",
+          "cached": 20
+        },
+        {
+          "cell": "J18",
+          "value": "=J11*$D$7",
+          "cached": 20
+        },
+        {
+          "cell": "F19",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "G19",
+          "value": "=G12*$D$4",
+          "cached": 20
+        },
+        {
+          "cell": "H19",
+          "value": "=H12*$D$5",
+          "cached": 24
+        },
+        {
+          "cell": "I19",
+          "value": "=I12*$D$6",
+          "cached": 20
+        },
+        {
+          "cell": "J19",
+          "value": "=J12*$D$7",
+          "cached": 12
+        },
+        {
+          "cell": "F20",
+          "value": "Kandidat C",
+          "cached": "Kandidat C"
+        },
+        {
+          "cell": "G20",
+          "value": "=G13*$D$4",
+          "cached": 20
+        },
+        {
+          "cell": "H20",
+          "value": "=H13*$D$5",
+          "cached": 24
+        },
+        {
+          "cell": "I20",
+          "value": "=I13*$D$6",
+          "cached": 25
+        },
+        {
+          "cell": "J20",
+          "value": "=J13*$D$7",
+          "cached": 16
+        },
+        {
+          "cell": "F23",
+          "value": "5. Skor Preferensi untuk Masing-masing Alternatif",
+          "cached": "5. Skor Preferensi untuk Masing-masing Alternatif"
+        },
+        {
+          "cell": "F24",
+          "value": "Alternatif",
+          "cached": "Alternatif"
+        },
+        {
+          "cell": "G24",
+          "value": "Skor Preferensi",
+          "cached": "Skor Preferensi"
+        },
+        {
+          "cell": "H24",
+          "value": "Ranking",
+          "cached": "Ranking"
+        },
+        {
+          "cell": "F25",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "G25",
+          "value": "=SUM(G18:J18)",
+          "cached": 95
+        },
+        {
+          "cell": "H25",
+          "value": "=RANK(G25,$G$25:$G$27,0)",
+          "cached": 1
+        },
+        {
+          "cell": "F26",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "G26",
+          "value": "=SUM(G19:J19)",
+          "cached": 76
+        },
+        {
+          "cell": "H26",
+          "value": "=RANK(G26,$G$25:$G$27,0)",
+          "cached": 3
+        },
+        {
+          "cell": "F27",
+          "value": "Kandidat C",
+          "cached": "Kandidat C"
+        },
+        {
+          "cell": "G27",
+          "value": "=SUM(G20:J20)",
+          "cached": 85
+        },
+        {
+          "cell": "H27",
+          "value": "=RANK(G27,$G$25:$G$27,0)",
+          "cached": 2
+        },
+        {
+          "cell": "B29",
+          "value": "Simulasi akademik: seluruh kandidat dan skor penilaian bersifat fiktif.",
+          "cached": "Simulasi akademik: seluruh kandidat dan skor penilaian bersifat fiktif."
+        }
+      ],
+      "GDSS Penilaian Akhir": [
+        {
+          "cell": "B3",
+          "value": "1. Bobot Borda",
+          "cached": "1. Bobot Borda"
+        },
+        {
+          "cell": "E3",
+          "value": "2. Perhitungan Akhir GDSS dengan Metode Borda",
+          "cached": "2. Perhitungan Akhir GDSS dengan Metode Borda"
+        },
+        {
+          "cell": "B4",
+          "value": "Ranking",
+          "cached": "Ranking"
+        },
+        {
+          "cell": "C4",
+          "value": "Bobot Borda",
+          "cached": "Bobot Borda"
+        },
+        {
+          "cell": "E4",
+          "value": "Alternatif",
+          "cached": "Alternatif"
+        },
+        {
+          "cell": "F4",
+          "value": "Ranking",
+          "cached": "Ranking"
+        },
+        {
+          "cell": "I4",
+          "value": "Poin Borda",
+          "cached": "Poin Borda"
+        },
+        {
+          "cell": "J4",
+          "value": "Nilai Borda",
+          "cached": "Nilai Borda"
+        },
+        {
+          "cell": "K4",
+          "value": "Ranking Akhir",
+          "cached": "Ranking Akhir"
+        },
+        {
+          "cell": "B5",
+          "value": 1,
+          "cached": 1
+        },
+        {
+          "cell": "C5",
+          "value": 3,
+          "cached": 3
+        },
+        {
+          "cell": "F5",
+          "value": 1,
+          "cached": 1
+        },
+        {
+          "cell": "G5",
+          "value": 2,
+          "cached": 2
+        },
+        {
+          "cell": "H5",
+          "value": 3,
+          "cached": 3
+        },
+        {
+          "cell": "B6",
+          "value": 2,
+          "cached": 2
+        },
+        {
+          "cell": "C6",
+          "value": 2,
+          "cached": 2
+        },
+        {
+          "cell": "E6",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "F6",
+          "value": "=--('Penilaian Ketua Panel'!$H$25=F$5)+--('Penilaian Anggota 1'!$H$25=F$5)+--('Penilaian Anggota 2'!$H$25=F$5)",
+          "cached": 2
+        },
+        {
+          "cell": "G6",
+          "value": "=--('Penilaian Ketua Panel'!$H$25=G$5)+--('Penilaian Anggota 1'!$H$25=G$5)+--('Penilaian Anggota 2'!$H$25=G$5)",
+          "cached": 1
+        },
+        {
+          "cell": "H6",
+          "value": "=--('Penilaian Ketua Panel'!$H$25=H$5)+--('Penilaian Anggota 1'!$H$25=H$5)+--('Penilaian Anggota 2'!$H$25=H$5)",
+          "cached": 0
+        },
+        {
+          "cell": "I6",
+          "value": "=F6*$C$5+G6*$C$6+H6*$C$7",
+          "cached": 8
+        },
+        {
+          "cell": "J6",
+          "value": "=I6/$I$9",
+          "cached": 0.4444444444444444
+        },
+        {
+          "cell": "K6",
+          "value": "=RANK(I6,$I$6:$I$8,0)",
+          "cached": 1
+        },
+        {
+          "cell": "B7",
+          "value": 3,
+          "cached": 3
+        },
+        {
+          "cell": "C7",
+          "value": 1,
+          "cached": 1
+        },
+        {
+          "cell": "E7",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "F7",
+          "value": "=--('Penilaian Ketua Panel'!$H$26=F$5)+--('Penilaian Anggota 1'!$H$26=F$5)+--('Penilaian Anggota 2'!$H$26=F$5)",
+          "cached": 1
+        },
+        {
+          "cell": "G7",
+          "value": "=--('Penilaian Ketua Panel'!$H$26=G$5)+--('Penilaian Anggota 1'!$H$26=G$5)+--('Penilaian Anggota 2'!$H$26=G$5)",
+          "cached": 1
+        },
+        {
+          "cell": "H7",
+          "value": "=--('Penilaian Ketua Panel'!$H$26=H$5)+--('Penilaian Anggota 1'!$H$26=H$5)+--('Penilaian Anggota 2'!$H$26=H$5)",
+          "cached": 1
+        },
+        {
+          "cell": "I7",
+          "value": "=F7*$C$5+G7*$C$6+H7*$C$7",
+          "cached": 6
+        },
+        {
+          "cell": "J7",
+          "value": "=I7/$I$9",
+          "cached": 0.3333333333333333
+        },
+        {
+          "cell": "K7",
+          "value": "=RANK(I7,$I$6:$I$8,0)",
+          "cached": 2
+        },
+        {
+          "cell": "E8",
+          "value": "Kandidat C",
+          "cached": "Kandidat C"
+        },
+        {
+          "cell": "F8",
+          "value": "=--('Penilaian Ketua Panel'!$H$27=F$5)+--('Penilaian Anggota 1'!$H$27=F$5)+--('Penilaian Anggota 2'!$H$27=F$5)",
+          "cached": 0
+        },
+        {
+          "cell": "G8",
+          "value": "=--('Penilaian Ketua Panel'!$H$27=G$5)+--('Penilaian Anggota 1'!$H$27=G$5)+--('Penilaian Anggota 2'!$H$27=G$5)",
+          "cached": 1
+        },
+        {
+          "cell": "H8",
+          "value": "=--('Penilaian Ketua Panel'!$H$27=H$5)+--('Penilaian Anggota 1'!$H$27=H$5)+--('Penilaian Anggota 2'!$H$27=H$5)",
+          "cached": 2
+        },
+        {
+          "cell": "I8",
+          "value": "=F8*$C$5+G8*$C$6+H8*$C$7",
+          "cached": 4
+        },
+        {
+          "cell": "J8",
+          "value": "=I8/$I$9",
+          "cached": 0.2222222222222222
+        },
+        {
+          "cell": "K8",
+          "value": "=RANK(I8,$I$6:$I$8,0)",
+          "cached": 3
+        },
+        {
+          "cell": "E9",
+          "value": "Total",
+          "cached": "Total"
+        },
+        {
+          "cell": "I9",
+          "value": "=SUM(I6:I8)",
+          "cached": 18
+        },
+        {
+          "cell": "J9",
+          "value": "=SUM(J6:J8)",
+          "cached": 0.9999999999999999
+        },
+        {
+          "cell": "E11",
+          "value": "Alternatif peringkat pertama",
+          "cached": "Alternatif peringkat pertama"
+        },
+        {
+          "cell": "I11",
+          "value": "=INDEX(E6:E8,MATCH(MAX(I6:I8),I6:I8,0))",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "B14",
+          "value": "Catatan perhitungan:",
+          "cached": "Catatan perhitungan:"
+        },
+        {
+          "cell": "B15",
+          "value": "Borda memakai frekuensi ranking dari ketiga decision maker, bukan penjumlahan skor SAW.",
+          "cached": "Borda memakai frekuensi ranking dari ketiga decision maker, bukan penjumlahan skor SAW."
+        },
+        {
+          "cell": "B16",
+          "value": "Skor Borda: ranking 1 = 3 poin; ranking 2 = 2 poin; ranking 3 = 1 poin.",
+          "cached": "Skor Borda: ranking 1 = 3 poin; ranking 2 = 2 poin; ranking 3 = 1 poin."
+        },
+        {
+          "cell": "B17",
+          "value": "Data kandidat dan penilaian merupakan simulasi fiktif untuk praktikum GDSS.",
+          "cached": "Data kandidat dan penilaian merupakan simulasi fiktif untuk praktikum GDSS."
+        }
+      ],
+      "Voting Langsung": [
+        {
+          "cell": "B2",
+          "value": "1. Voting Langsung oleh Tiga Decision Maker",
+          "cached": "1. Voting Langsung oleh Tiga Decision Maker"
+        },
+        {
+          "cell": "B3",
+          "value": "Decision maker",
+          "cached": "Decision maker"
+        },
+        {
+          "cell": "C3",
+          "value": "Kode",
+          "cached": "Kode"
+        },
+        {
+          "cell": "D3",
+          "value": "Pilihan kandidat",
+          "cached": "Pilihan kandidat"
+        },
+        {
+          "cell": "E3",
+          "value": "Ranking SAW pilihan",
+          "cached": "Ranking SAW pilihan"
+        },
+        {
+          "cell": "G3",
+          "value": "Tabel Status Voting",
+          "cached": "Tabel Status Voting"
+        },
+        {
+          "cell": "B4",
+          "value": "Ketua Panel",
+          "cached": "Ketua Panel"
+        },
+        {
+          "cell": "C4",
+          "value": "DM1",
+          "cached": "DM1"
+        },
+        {
+          "cell": "D4",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "E4",
+          "value": "=INDEX('Penilaian Ketua Panel'!$H$25:$H$27,MATCH(D4,'Penilaian Ketua Panel'!$F$25:$F$27,0))",
+          "cached": 1
+        },
+        {
+          "cell": "G4",
+          "value": "Suara tertinggi",
+          "cached": "Suara tertinggi"
+        },
+        {
+          "cell": "H4",
+          "value": "Keterangan",
+          "cached": "Keterangan"
+        },
+        {
+          "cell": "B5",
+          "value": "Anggota Panel 1",
+          "cached": "Anggota Panel 1"
+        },
+        {
+          "cell": "C5",
+          "value": "DM2",
+          "cached": "DM2"
+        },
+        {
+          "cell": "D5",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "E5",
+          "value": "=INDEX('Penilaian Anggota 1'!$H$25:$H$27,MATCH(D5,'Penilaian Anggota 1'!$F$25:$F$27,0))",
+          "cached": 1
+        },
+        {
+          "cell": "G5",
+          "value": 0,
+          "cached": 0
+        },
+        {
+          "cell": "H5",
+          "value": "Belum ada suara",
+          "cached": "Belum ada suara"
+        },
+        {
+          "cell": "B6",
+          "value": "Anggota Panel 2",
+          "cached": "Anggota Panel 2"
+        },
+        {
+          "cell": "C6",
+          "value": "DM3",
+          "cached": "DM3"
+        },
+        {
+          "cell": "D6",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "E6",
+          "value": "=INDEX('Penilaian Anggota 2'!$H$25:$H$27,MATCH(D6,'Penilaian Anggota 2'!$F$25:$F$27,0))",
+          "cached": 1
+        },
+        {
+          "cell": "G6",
+          "value": 1,
+          "cached": 1
+        },
+        {
+          "cell": "H6",
+          "value": "Seri 1-1-1; voting ulang",
+          "cached": "Seri 1-1-1; voting ulang"
+        },
+        {
+          "cell": "G7",
+          "value": 2,
+          "cached": 2
+        },
+        {
+          "cell": "H7",
+          "value": "Mayoritas 2 dari 3 suara",
+          "cached": "Mayoritas 2 dari 3 suara"
+        },
+        {
+          "cell": "G8",
+          "value": 3,
+          "cached": 3
+        },
+        {
+          "cell": "H8",
+          "value": "Bulat 3 dari 3 suara",
+          "cached": "Bulat 3 dari 3 suara"
+        },
+        {
+          "cell": "B9",
+          "value": "2. Rekap Perolehan Suara",
+          "cached": "2. Rekap Perolehan Suara"
+        },
+        {
+          "cell": "B10",
+          "value": "Alternatif",
+          "cached": "Alternatif"
+        },
+        {
+          "cell": "C10",
+          "value": "Jumlah suara",
+          "cached": "Jumlah suara"
+        },
+        {
+          "cell": "D10",
+          "value": "Persentase",
+          "cached": "Persentase"
+        },
+        {
+          "cell": "E10",
+          "value": "Ranking suara",
+          "cached": "Ranking suara"
+        },
+        {
+          "cell": "B11",
+          "value": "Kandidat A",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "C11",
+          "value": "=SUMPRODUCT(($D$4:$D$6=B11)*1)",
+          "cached": 2
+        },
+        {
+          "cell": "D11",
+          "value": "=C11/SUM($C$11:$C$13)",
+          "cached": 0.6666666666666666
+        },
+        {
+          "cell": "E11",
+          "value": "=RANK(C11,$C$11:$C$13,0)",
+          "cached": 1
+        },
+        {
+          "cell": "B12",
+          "value": "Kandidat B",
+          "cached": "Kandidat B"
+        },
+        {
+          "cell": "C12",
+          "value": "=SUMPRODUCT(($D$4:$D$6=B12)*1)",
+          "cached": 1
+        },
+        {
+          "cell": "D12",
+          "value": "=C12/SUM($C$11:$C$13)",
+          "cached": 0.3333333333333333
+        },
+        {
+          "cell": "E12",
+          "value": "=RANK(C12,$C$11:$C$13,0)",
+          "cached": 2
+        },
+        {
+          "cell": "B13",
+          "value": "Kandidat C",
+          "cached": "Kandidat C"
+        },
+        {
+          "cell": "C13",
+          "value": "=SUMPRODUCT(($D$4:$D$6=B13)*1)",
+          "cached": 0
+        },
+        {
+          "cell": "D13",
+          "value": "=C13/SUM($C$11:$C$13)",
+          "cached": 0
+        },
+        {
+          "cell": "E13",
+          "value": "=RANK(C13,$C$11:$C$13,0)",
+          "cached": 3
+        },
+        {
+          "cell": "B15",
+          "value": "3. Status dan Hasil Voting",
+          "cached": "3. Status dan Hasil Voting"
+        },
+        {
+          "cell": "B16",
+          "value": "Jumlah suara masuk",
+          "cached": "Jumlah suara masuk"
+        },
+        {
+          "cell": "C16",
+          "value": "=COUNTA(D4:D6)",
+          "cached": 3
+        },
+        {
+          "cell": "B17",
+          "value": "Jumlah suara tertinggi",
+          "cached": "Jumlah suara tertinggi"
+        },
+        {
+          "cell": "C17",
+          "value": "=MAX(C11:C13)",
+          "cached": 2
+        },
+        {
+          "cell": "B18",
+          "value": "Kandidat suara tertinggi",
+          "cached": "Kandidat suara tertinggi"
+        },
+        {
+          "cell": "C18",
+          "value": "=INDEX(B11:B13,MATCH(C17,C11:C13,0))",
+          "cached": "Kandidat A"
+        },
+        {
+          "cell": "B19",
+          "value": "Status perolehan suara",
+          "cached": "Status perolehan suara"
+        },
+        {
+          "cell": "C19",
+          "value": "=VLOOKUP(C17,$G$5:$H$8,2,0)",
+          "cached": "Mayoritas 2 dari 3 suara"
+        },
+        {
+          "cell": "B21",
+          "value": "4. Pengesahan Ketua Panel",
+          "cached": "4. Pengesahan Ketua Panel"
+        },
+        {
+          "cell": "B22",
+          "value": "Diperiksa oleh",
+          "cached": "Diperiksa oleh"
+        },
+        {
+          "cell": "C22",
+          "value": "Ketua Panel",
+          "cached": "Ketua Panel"
+        },
+        {
+          "cell": "B23",
+          "value": "Catatan pengesahan",
+          "cached": "Catatan pengesahan"
+        },
+        {
+          "cell": "C23",
+          "value": "Simulasi; dapat disahkan setelah 3 suara masuk.",
+          "cached": "Simulasi; dapat disahkan setelah 3 suara masuk."
+        },
+        {
+          "cell": "B25",
+          "value": "Catatan: voting ini terpisah dari perhitungan Borda pada lembar GDSS Penilaian Akhir.",
+          "cached": "Catatan: voting ini terpisah dari perhitungan Borda pada lembar GDSS Penilaian Akhir."
+        },
+        {
+          "cell": "B26",
+          "value": "Setiap DM memberikan satu suara; Ketua Panel memvalidasi kelengkapan dan mengesahkan hasil.",
+          "cached": "Setiap DM memberikan satu suara; Ketua Panel memvalidasi kelengkapan dan mengesahkan hasil."
+        },
+        {
+          "cell": "B27",
+          "value": "Jika suara terbagi 1-1-1, voting ulang diperlukan sebelum hasil final ditetapkan.",
+          "cached": "Jika suara terbagi 1-1-1, voting ulang diperlukan sebelum hasil final ditetapkan."
+        },
+        {
+          "cell": "B28",
+          "value": "Semua kandidat, perolehan suara, dan penilaian merupakan data contoh fiktif.",
+          "cached": "Semua kandidat, perolehan suara, dan penilaian merupakan data contoh fiktif."
+        }
+      ]
+    }
+  },
+  "Latar Belakang Sisfor.pdf": {
+    "sha256": "94c9677ffbe291d84cedacb2d42333995f87cbff27c0d5a9c46f09b9620b5590",
+    "pages": [
+      {
+        "page": 1,
+        "text": "1 \nLAPORAN PROJEK UJIAN AKHIR SEMESTER \nMata Kuliah Praktikum Sistem Informasi \nImplementasi Sistem Group Decision Support System (GDSS) untuk Mendukung \nPengambilan Keputusan Kolektif dalam Pemilihan Calon Presiden \nDosen Pengampu: \nAshri Shabrina Afrah, M.T. \n \n \n \n \n \nDisusun oleh: \n \nAhmad Ainur Rafi (240605110020) \nM. Fahrizal Mufti Ash-Shidqi AD (240605110022) \nMuhammad Nurrohmad Mujahidin (240605110063) \nFaril Isra Albiansyah (240605110087) \n \n \n \nPROGRAM STUDI TEKNIK INFORMATIKA \nFAKULTAS SAINS DAN TEKNOLOGI \nUNIVERSITAS ISLAM NEGERI MAULANA MALIK IBRAHIM \nMALANG \n2026 \n"
+      },
+      {
+        "page": 2,
+        "text": "2 \nBAB I  \nPENDAHULUAN \n1.1 Latar Belakang \nPengambilan keputusan kelompok merupakan proses ketika sejumlah individu \nmenyusun preferensi terhadap alternatif yang tersedia dan menentukan hasil keputusan \nbersama. Proses tersebut dapat mencakup pengumpulan preferensi, pertukaran informasi, dan \npenentuan kesepakatan antarpeserta. Tran et al. (2024) menguraikan bahwa model \npengambilan keputusan kelompok menggunakan mekanisme agregasi preferensi dan proses \npencapaian konsensus untuk menghasilkan keputusan kelompok. Kerangka ini dapat \nditerapkan pada simulasi pengambilan keputusan bertema politik yang menggunakan sejumlah \ncalon presiden sebagai alternatif pilihan. \nDalam bidang sistem informasi, Group Decision Support System (GDSS) dikembangkan \nuntuk memfasilitasi proses pengambilan keputusan yang melibatkan lebih dari satu individu. \nDeSanctis dan Gallupe (1987) mendefinisikan GDSS sebagai kombinasi teknologi komunikasi, \nkomputasi, dan pendukung keputusan untuk membantu kelompok merumuskan serta \nmenyelesaikan permasalahan. Nunamaker et al. (1991) mendeskripsikan penggunaan sistem \npertemuan elektronik untuk mendukung aktivitas kelompok, termasuk penyampaian gagasan \ndan evaluasi alternatif. Kedua kajian tersebut menjadi dasar penggunaan akun pengguna \nterpisah dan pencatatan masukan individual dalam rancangan sistem ini. \nPenerapan GDSS berbasis web memungkinkan anggota kelompok mengakses proses \npengambilan keputusan melalui antarmuka yang terhubung dengan sistem. Carneiro et al. \n(2021) membahas karakteristik GDSS berbasis web untuk mendukung peserta yang berada \npada lokasi  berbeda, termasuk kebutuhan komunikasi dan pengelolaan proses keputusan. \nSementara itu, Fjermestad (2004), melalui analisis terhadap 145 eksperimen, menunjukkan \nbahwa hasil penggunaan sistem pendukung kelompok bervariasi menurut jenis tugas dan moda \nkomunikasi. Temuan tersebut menjadi pertimbangan agar implementasi proyek difokuskan \npada fungsi yang dapat diamati dan diuji, yaitu pengisian penilaian, pencatatan suara, \nperhitungan voting, dan penyajian hasil. \nMetode voting dapat digunakan untuk menggabungkan pilihan individual menjadi hasil \nkeputusan kelompok. Cheng dan Deek (2012) mengkaji dasar teoretis, klasifikasi metode \nvoting, dan aspek implementasinya dalam GDSS. Pada mekanisme voting langsung, setiap \npeserta memilih satu alternatif, lalu sistem menghitung jumlah suara yang diterima setiap \nalternatif sesuai aturan yang ditetapkan. Hasil perhitungan merupakan dasar penentuan pilihan \nkelompok pada proyek yang dirancang. Aturan suara seri, pembukaan voting, dan pengesahan \nhasil perlu dinyatakan secara eksplisit dalam sistem. "
+      },
+      {
+        "page": 3,
+        "text": "3 \nIstilah konsensus dalam kajian pengambilan keputusan kelompok mencakup tingkat \npersetujuan yang berbeda. Herrera-Viedma et al. (2014) membedakan kesepakatan penuh dari \nmodel konsensus lunak yang memperhitungkan tingkat keselarasan preferensi. Tran et al. \n(2024) juga menjelaskan penggunaan mekanisme konsensus, negosiasi, dan peran fasilitator \ndalam proses keputusan kelompok. Dalam proyek ini, konsensus dioperasionalkan melalui \nhasil voting mayoritas pada panel yang terdiri atas tiga pengambil keputusan. Pero lehan dua \natau tiga suara untuk satu alternatif dinyatakan sebagai keputusan mayoritas panel; perolehan \nmasing-masing satu suara memerlukan putaran voting berikutnya atau prosedur penyelesaian \nsuara seri. \nBerdasarkan landasan tersebut, proyek Ujian Akhir Semester ini mengusulkan \nimplementasi website GDSS untuk simulasi pemilihan calon presiden. Objek pemilihan \nmenggunakan kandidat fiktif dan kelompok pengambil keputusan yang terdiri atas tiga akun \ndengan pe ran berbeda. Setiap anggota melakukan penilaian individual terlebih dahulu, \nkemudian memberikan satu suara pada tahap voting. Akun ketua panel menjalankan tahapan \nkonsensus dan mengesahkan hasil. Ruang lingkup proyek dibatasi pada simulasi keputusan \npanel untuk kebutuhan pembelajaran sistem informasi; hasil yang ditampilkan merupakan \npilihan kelompok simulasi dan tidak merepresentasikan hasil pemilihan umum nasional. \n1.2 Rumusan Masalah \nBerdasarkan latar belakang tersebut, rumusan masalah proyek disusun untuk \nmenjelaskan kebutuhan sistem, tahapan penilaian individual, dan proses pengambilan \nkeputusan kolektif melalui voting. Rumusan masalah yang digunakan adalah sebagai berikut. \n1. Bagaimana merancang dan mengimplementasikan website GDSS dengan tiga akun \npengambil keputusan untuk simulasi pemilihan calon presiden? \n2. Bagaimana sistem menyimpan penilaian individual terhadap alternatif calon presiden \nsebelum pelaksanaan voting? \n3. Bagaimana mekanisme voting langsung, penyelesaian suara seri, dan pengesahan hasil \nkonsensus diterapkan dalam sistem? \n1.3 Tujuan Projek \nProyek ini bertujuan merancang dan mengimplementasikan website GDSS untuk \nsimulasi pemilihan calon presiden oleh tiga pengambil keputusan. Sistem direncanakan \nmemiliki pengelolaan akun berdasarkan peran, daftar kandidat fiktif, formulir penilaian \nindividual, dan pencatatan status penyelesaian penilaian. Proyek ini juga bertujuan menerapkan \nvoting langsung dengan satu suara untuk setiap anggota panel, menghitung perolehan suara, \nmengatur proses pengesahan oleh ketua panel, serta menampilkan rekap keputusan k epada \nseluruh anggota. "
+      },
+      {
+        "page": 4,
+        "text": "4 \n1.4 Manfaat Projek \nBagi mahasiswa, proyek ini menjadi sarana penerapan konsep GDSS pada \npengembangan website yang melibatkan pengelolaan data, autentikasi pengguna, dan proses \nkeputusan kelompok. Bagi kegiatan praktikum Sistem Informasi, proyek ini menyediakan \ncontoh penerapan penilaian individual yang dilanjutkan dengan voting dan pencatatan hasil. \nBagi pengembangan sistem berikutnya, rancangan data dan alur proses dapat digunakan \nsebagai dasar untuk menambahkan variasi metode voting, pengelolaan beberapa sesi seleksi, \natau pengujian antarmuka pengguna. \n1.5 Deskripsi Projek \nProyek berjudul “Implementasi Sistem Group Decision Support System (GDSS) untuk \nMendukung Pengambilan Keputusan Kolektif dalam Pemilihan Calon Presiden” dirancang \nsebagai website simulasi bertema politik. Sistem menggunakan kandidat fiktif dan tiga decision \nmaker (DM), yaitu Ketua Panel (DM1), Anggota Panel 1 (DM2), serta Anggota Panel 2 (DM3). \nKetiganya dapat menilai alternatif, memberikan satu suara, dan melihat hasil. Ketua Panel \nmempunyai kewenangan tambahan untuk membuka voting dan mengesahkan keputusan. \nAlur penggunaan meliputi login, pembacaan profil kandidat fiktif, dan pengisian \npenilaian individual. Kriteria simulasi dapat mencakup kesesuaian program kerja terhadap \nindikator yang telah disepakati, pengalaman kepemimpinan dalam profil kandidat, dan \nkelengkapan informasi. Penilaian dicatat sebagai bahan pertimbangan setiap anggota panel. \nSetelah seluruh DM menyelesaikan penilaian, Ketua Panel membuka tahap voting. Sistem \ndirancang untuk menyajikan pilihan anggota panel tanpa mengurutkan kelayakan tokoh politik \nnyata. \nSetiap DM memilih satu kandidat pada tiap putaran voting. Sistem menyimpan akun \npemilih, kandidat pilihan, nomor putaran, dan waktu pemberian suara, dengan pembatasan satu \nsuara per akun untuk setiap putaran. Setelah ketiga suara diterima, sistem menghitun g \nperolehan suara. Kandidat yang memperoleh sedikitnya dua suara menjadi hasil mayoritas \npanel dan dapat disahkan Ketua Panel. Apabila ketiga DM memilih kandidat berbeda, status \nproses menjadi belum mencapai mayoritas dan sistem menyediakan voting ulang. H asil \npengesahan beserta alasan penetapan disimpan dalam riwayat keputusan. \nHalaman sistem meliputi login, dashboard, data kandidat, kriteria, penilaian, voting, dan \nhasil konsensus. Basis data relasional menyimpan akun pengguna, kandidat, kriteria, penilaian, \nsuara, serta keputusan akhir. PHP, MySQL, dan Bootstrap diajukan sebaga i teknologi \nimplementasi awal. Pengujian fungsional direncanakan meliputi validasi peran pengguna, \nkelengkapan penilaian, batas satu suara, penghitungan hasil, dan akses hasil oleh seluruh DM. "
+      },
+      {
+        "page": 5,
+        "text": "5 \nDAFTAR PUSTAKA \nCarneiro, J., Alves, P., Marreiros, G., & Novais, P. (2021). Group decision support systems \nfor current times: Overcoming the challenges of dispersed group decision-making. \nNeurocomputing, 423, 735–746. https://doi.org/10.1016/j.neucom.2020.04.100 \nCheng, K. E., & Deek, F. P. (2012). Voting tools in group decision support systems: Theory \nand implementation. International Journal of Management and Decision Making, \n12(1), 1–20. https://doi.org/10.1504/IJMDM.2012.051037 \nDeSanctis, G., & Gallupe, R. B. (1987). A foundation for the study of group decision support \nsystems. Management Science, 33(5), 589–609. \nhttps://doi.org/10.1287/mnsc.33.5.589 \nFjermestad, J. (2004). An analysis of communication mode in group support systems \nresearch. Decision Support Systems, 37(2), 239–263. https://doi.org/10.1016/S0167-\n9236(03)00021-6 \nHerrera-Viedma, E., Cabrerizo, F. J., Kacprzyk, J., & Pedrycz, W. (2014). A review of soft \nconsensus models in a fuzzy environment. Information Fusion, 17, 4–13. \nhttps://doi.org/10.1016/j.inffus.2013.04.002 \nNunamaker, J. F., Dennis, A. R., Valacich, J. S., Vogel, D., & George, J. F. (1991). \nElectronic meeting systems to support group work. Communications of the ACM, \n34(7), 40–61. https://doi.org/10.1145/105783.105793 \nTran, T. N. T., Felfernig, A., & Le, V. M. (2024). An overview of consensus models for \ngroup decision-making and group recommender systems. User Modeling and User-\nAdapted Interaction, 34, 489–547. https://doi.org/10.1007/s11257-023-09380-z \n "
+      }
+    ]
+  },
+  "PROJECT AKHIR MATA KULIAH PRAKTIKUM SISTEM INFORMASI (1).pptx": {
+    "sha256": "a8c00c5eaed78b480f475101a444ba7b626d7bc94c6f2623d5ae5c5423dd69ef",
+    "slides": [
+      {
+        "slide": 1,
+        "texts": [
+          "PROJECT AKHIR MATA KULIAH PRAKTIKUM SISTEM INFORMASI",
+          "ASHRI SHABRINA AFRAH, M.T"
+        ],
+        "tables": [],
+        "notes": ""
+      },
+      {
+        "slide": 2,
+        "texts": [
+          "PROJECT AKHIR MATA KULIAH PRAKTIKUM SISTEM INFORMASI",
+          "Buatlah sebuah Group Decision Support System (GDSS) dengan ketentuan:\n1. Tema bebas (boleh dipilih oleh kelompok).\n2. Group Decision Support System (GDSS) memiliki minimal 3 decision maker.\n3. Group Decision Support System (GDSS) dibuat dalam bentuk website dengan 3 akun pengguna untuk 3 decision maker.\n4. Group Decision Support System (GDSS) memungkinkan setiap decision maker untuk melakukan penilaian secara individual, dan setelah semua decision maker melakukan penilaian, dilakukan konsensus pengambilan keputusan dengan Metode Voting dari akun decision maker dengan jabatan yang tertinggi.  \n5. Semua decision maker dapat melihat hasil konsensus pengambilan keputusan."
+        ],
+        "tables": [],
+        "notes": ""
+      }
+    ]
+  }
+}
