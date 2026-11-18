@@ -12,8 +12,11 @@ frontend/build/
 !.env.example
 
 # Database & Logs
-*.sql
 *.log
+# Exclude raw SQL dumps, but allow schema and seed files
+*.sql
+!database/*.sql
+!backend/database/*.sql
 
 # IDE & OS
 .vscode/
