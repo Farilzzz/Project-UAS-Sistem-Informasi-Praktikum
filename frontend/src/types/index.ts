@@ -16,19 +16,37 @@ export interface LoginResponseData {
 
 export interface Candidate {
   id: number;
+  session_id?: number;
   name: string;
+  description?: string | null;
   vision: string | null;
   mission: string | null;
+  work_program?: string | null;
   profile: string | null;
+  is_finalized?: boolean | number;
+  created_at?: string;
 }
 
 export interface Criterion {
   id: number;
+  session_id?: number;
   code: string;
   name: string;
   weight: number;
   type: 'benefit' | 'cost';
   description?: string | null;
+  is_finalized?: boolean | number;
+  created_at?: string;
+}
+
+export interface CriteriaSummary {
+  session_id: number;
+  count: number;
+  total_weight: number;
+  is_complete: boolean;
+  is_finalized: boolean;
+  can_manage: boolean;
+  can_finalize: boolean;
 }
 
 export interface AssessmentItem {
@@ -140,7 +158,8 @@ export interface RatifiedDecision {
   vision?: string;
   mission?: string;
   total_votes: number;
-  percentage: number;
+  /** Backend mengirim DECIMAL sebagai string (mis. "66.67") lewat PDO. */
+  percentage: number | string;
   approved_by: number;
   approved_by_name: string;
   reason: string;
@@ -148,9 +167,20 @@ export interface RatifiedDecision {
   round_number?: number;
 }
 
+export interface ElectorateVoterStatus {
+  user_id: number;
+  username: string;
+  name: string;
+  role: UserRole;
+  has_voted: boolean;
+  voted_at?: string | null;
+}
+
 export interface VotingStatusResponse {
+  session_id?: number;
   session_status: 'assessment' | 'voting' | 'tie_revote' | 'voting_completed' | 'ratified';
   current_round: number;
+  round_id?: number | null;
   is_voting_open: boolean;
   has_voted_this_round: boolean;
   votes_cast_in_round: number;
@@ -162,6 +192,7 @@ export interface VotingStatusResponse {
   ratified_decision: RatifiedDecision | null;
   can_chair_open: boolean;
   can_chair_approve: boolean;
+  electorate: ElectorateVoterStatus[];
 }
 
 export interface VotingResultsResponse {
@@ -187,8 +218,95 @@ export interface DecisionHistoryResponse {
   final_decision: RatifiedDecision | null;
 }
 
+/* ===== Phase 4: Election Cycle / New Election System ===== */
+
+export type ElectionStatus = 'assessment' | 'voting' | 'tie_revote' | 'voting_completed' | 'ratified';
+
+/** Ringkasan satu siklus pemilihan untuk daftar histori. */
+export interface ElectionSummary {
+  id: number;
+  title: string;
+  description: string | null;
+  status: ElectionStatus;
+  current_round: number;
+  created_by: number | null;
+  previous_session_id: number | null;
+  created_at: string;
+  updated_at: string;
+  electorate_count: number;
+  round_count: number;
+  is_active: boolean;
+  final_candidate: string | null;
+  /** True hanya untuk Ketua Panel pada sesi aktif yang sudah ratified. */
+  can_create_election: boolean;
+}
+
+/** Detail sesi pada endpoint /elections/{id} (tanpa field agregat daftar). */
+export interface ElectionDetailSession {
+  id: number;
+  title: string;
+  description: string | null;
+  status: ElectionStatus;
+  current_round: number;
+  created_by: number | null;
+  previous_session_id: number | null;
+  created_at: string;
+  updated_at: string;
+  is_active: boolean;
+  can_create_election: boolean;
+}
+
+/** Electorate yang disnapshot saat siklus baru dibuat. */
+export interface ElectionElectorateMember {
+  user_id: number;
+  username: string;
+  role: UserRole;
+}
+
+export interface CreateElectionResponse {
+  session_id: number;
+  title: string;
+  description: string | null;
+  status: 'assessment';
+  current_round: 0;
+  previous_session_id: number;
+  created_by: number;
+  electorate: ElectionElectorateMember[];
+  message: string;
+}
+
+/** Baca ulang seluruh hasil siklus lama tanpa mengubahnya. */
+export interface ElectionDetail {
+  session: ElectionDetailSession;
+  voting_status: VotingStatusResponse;
+  voting_results: VotingResultsResponse | null;
+  history: DecisionHistoryResponse;
+  final_decision: RatifiedDecision | null;
+}
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
   data: T;
+}
+
+/* ===== Phase 6: Audit Trail ===== */
+
+export interface AuditLog {
+  id: number;
+  session_id: number | null;
+  user_id: number | null;
+  action: string;
+  details: string;
+  ip_address: string | null;
+  created_at: string;
+  user_name: string | null;
+  user_role: string | null;
+}
+
+export interface AuditLogsResponse {
+  logs: AuditLog[];
+  total: number;
+  limit: number;
+  offset: number;
 }

@@ -49,6 +49,15 @@ const FinalDecisionPage = lazy(() =>
 const DecisionHistoryPage = lazy(() =>
   import('@/features/voting/DecisionHistoryPage').then((m) => ({ default: m.DecisionHistoryPage }))
 );
+const ElectionHistoryPage = lazy(() =>
+  import('@/features/elections/ElectionHistoryPage').then((m) => ({ default: m.ElectionHistoryPage }))
+);
+const NewElectionPage = lazy(() =>
+  import('@/features/elections/NewElectionPage').then((m) => ({ default: m.NewElectionPage }))
+);
+const AuditLogPage = lazy(() =>
+  import('@/features/audit/AuditLogPage').then((m) => ({ default: m.AuditLogPage }))
+);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -125,6 +134,19 @@ const AppRoutes: React.FC = () => {
         <Route path="/voting/revote" element={<ProtectedLayout allowedRoles={['chair', 'member']}><RevotePage /></ProtectedLayout>} />
         <Route path="/decisions/final" element={<ProtectedLayout><FinalDecisionPage /></ProtectedLayout>} />
         <Route path="/decisions/history" element={<ProtectedLayout><DecisionHistoryPage /></ProtectedLayout>} />
+
+        {/* Protected: Election Cycle (Phase 4) */}
+        <Route path="/elections" element={<ProtectedLayout><ElectionHistoryPage /></ProtectedLayout>} />
+        <Route
+          path="/elections/new"
+          element={<ProtectedLayout allowedRoles={['chair']}><NewElectionPage /></ProtectedLayout>}
+        />
+
+        {/* Protected: Audit Trail (Phase 6, chair only) */}
+        <Route
+          path="/audit-logs"
+          element={<ProtectedLayout allowedRoles={['chair']}><AuditLogPage /></ProtectedLayout>}
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

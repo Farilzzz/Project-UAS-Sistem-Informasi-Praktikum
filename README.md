@@ -27,7 +27,9 @@ Kandidat dan akun seed adalah fiktif, bukan data pemilu atau pengguna nyata.
 │   └── INTEGRATION.md       # Dokumentasi integrasi frontend-backend
 ├── ATTRIBUTION.md           # Atribusi library & aset
 ├── SECURITY_REVIEW.md       # Tinjauan keamanan
-└── END_TO_END_TEST_REPORT.md # Laporan pengujian end-to-end
+├── END_TO_END_TEST_REPORT.md # Laporan pengujian end-to-end
+├── PHASE_6_AUDIT_REPORT.md  # Temuan & kriteria penerimaan Phase 6
+└── PHASE_6_IMPLEMENTATION_REPORT.md # Hasil implementasi Phase 6
 ```
 
 ---
@@ -91,7 +93,39 @@ Probe API: `http://127.0.0.1:5173/api/candidates`.
 4. Semua **DM + Voter** terdaftar memilih **1 suara per putaran**.
 5. Mayoritas **> 50%** → pemenang. **Seri** → Ketua buka **Revote**.
 6. Ketua **mengesahkan** hasil mayoritas → **Keputusan Final**.
-7. **Registrasi pemilih**: publik daftar via `/register` (backend validasi username unik, role `voter` otomatis).
+7. Ketua dapat membuka **Log Aktivitas** (`/audit-logs`, khusus `chair`) dan mencetak **Berita Acara Keputusan Resmi** dari halaman Keputusan Final.
+8. **Registrasi pemilih**: publik daftar via `/register` (backend validasi username unik, role `voter` otomatis).
+
+---
+
+## Fitur Phase 6
+
+### 1. Audit Trail (Log Aktivitas)
+
+- Halaman **Log Aktivitas** (`/audit-logs`) menampilkan jejak aktivitas sistem untuk sesi pemilihan aktif.
+- Akses **khusus Ketua Panel** (`chair`). Anggota panel (`member`), pemilih (`voter`), dan pengguna tanpa token ditolak — baik lewat menu maupun URL langsung.
+- Filter tersedia: **ID AKTOR**, **AKSI**, **DARI TANGGAL**, **SAMPAI TANGGAL**. Pagination `Berikutnya`/`Sebelumnya` untuk navigasi hasil.
+- Informasi per entri: **Waktu, Aktor, Peran, Aksi, Detail, IP**. Password, token, dan kredensial tidak ditampilkan.
+
+### 2. Berita Acara Keputusan
+
+- Buka halaman **Keputusan Final** dari Dashboard setelah Ketua Panel mengesahkan hasil voting.
+- Klik tombol **Cetak Berita Acara** → browser membuka dialog cetak.
+- Simpan sebagai PDF: pada dialog cetak pilih **Save as PDF** (Chrome/Edge) atau **Print to File**.
+- Dokumen memakai **format A4** (margin 16 mm). Sidebar, navbar, dan tombol otomatis tersembunyi saat cetak.
+- Tiga slot tanda tangan disediakan: **DM1 (Ketua Panel)**, **DM2 (Anggota Panel 1)**, **DM3 (Anggota Panel 2)**. Nama diambil dari data panelis sesi; jika belum tersedia, ditampilkan placeholder `Nama panelis — diisi resmi`.
+
+### 3. Dashboard Active Election
+
+- Banner **Siklus Pemilihan Aktif** menampilkan nama siklus, deskripsi, **ID Sesi**, **Status**, dan **Putaran** saat ini.
+- Status dan tahapan (penilaian → SAW/Borda → voting → keputusan) terbaca dari resolver sesi aktif backend, konsisten untuk semua peran.
+- Jika belum ada siklus aktif, ditampilkan empty state.
+
+### 4. Assessment (Penilaian)
+
+- Penilaian dapat dilakukan hanya bila **kriteria dan kandidat telah final** untuk sesi aktif.
+- Jika kriteria/kandidat belum tersedia atau belum difinalisasi, halaman menampilkan empty state yang mengarahkan ke **Ketua Panel**.
+- Anggota panel tidak melihat kontrol konfigurasi kriteria/kandidat.
 
 ---
 
@@ -101,14 +135,33 @@ Probe API: `http://127.0.0.1:5173/api/candidates`.
 # Frontend
 cd frontend
 npm ci
-npm test          # 39 test passing
-npm run typecheck # tsc --noEmit
-npm run build     # production build
+npm test              # 97 test passing
+npx tsc --noEmit      # TypeScript check
+npm run build         # production build
 
 # Backend regression (SQLite in-memory, tidak sentuh DB aplikasi)
 cd ..\backend
-C:/xampp/php/php.exe tests/run.php
+C:/xampp/php/php.exe tests/run.php   # 66 test passing
 ```
+
+Hasil final: backend **66/66 PASS**, frontend **97/97 PASS**, TypeScript **PASS**, production build **PASS**, PHP syntax **PASS**.
+
+---
+
+## Project Status
+
+| Phase | Ringkasan | Status |
+|---|---|---|
+| 1 | Fondasi auth, role, kandidat, kriteria | Selesai |
+| 2 | Penilaian SAW individual & Borda agregasi | Selesai |
+| 3 | Voting langsung, revote, pengesahan ketua | Selesai |
+| 4 | Siklus pemilihan & histori keputusan | Selesai |
+| 5 | Data master per sesi (kriteria & kandidat final) | Selesai |
+| 6 | Audit Trail, Berita Acara, konteks siklus aktif, empty state penilaian, QA responsif & cetak | **READY WITH LIMITATIONS** |
+
+**Keterbatasan QA visual:** Playwright tidak tersedia; QA dilakukan dengan **Chrome headless + Chrome DevTools Protocol (CDP)**. Screenshot dan PDF A4 dihasilkan, tetapi **belum diperiksa secara visual manual oleh manusia**. Pemeriksaan memakai DOM terukur (lebar tabel, overflow, computed style, teks, jumlah heading) dan emulasi media cetak. Review manual artefak disarankan sebelum rilis produksi.
+
+Detail lengkap: [`PHASE_6_IMPLEMENTATION_REPORT.md`](PHASE_6_IMPLEMENTATION_REPORT.md).
 
 ---
 
@@ -117,6 +170,7 @@ C:/xampp/php/php.exe tests/run.php
 - `.env`, token, credential, `node_modules`, `dist`, `vendor`, log, dump DB **tidak di-commit**.
 - `APP_KEY` & `DB_PASSWORD` template kosong → wajib isi lokal.
 - Bearer token (bukan cookie). Logout hapus token klien; token terbit tetap valid sampai expired.
+- `GET /api/audit-logs` hanya untuk `chair`; `member`/`voter` ditolak 403, tanpa token ditolak 401.
 - HTTPS, revocation, hardening produksi **belum dicakup**.
 - Endpoint publik: kandidat, kriteria, keputusan. **Simulator akademik, bukan sistem produksi**.
 

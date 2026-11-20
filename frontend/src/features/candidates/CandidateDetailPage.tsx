@@ -78,7 +78,7 @@ export const CandidateDetailPage: React.FC = () => {
         <span className="text-xs text-slate-400 uppercase tracking-wider font-medium">Detail Kandidat</span>
       </div>
 
-      {c.vision || c.mission ? (
+      {c.vision || c.mission || c.description || c.work_program || c.profile ? (
         <article className="bg-white rounded-xl shadow border border-slate-200 overflow-hidden">
           <div className="px-6 py-5 border-b border-slate-200 bg-slate-50">
             <div className="flex items-center gap-4">
@@ -99,6 +99,15 @@ export const CandidateDetailPage: React.FC = () => {
           </div>
 
           <div className="p-6 space-y-5">
+            {c.description && (
+              <section>
+                <h3 className="font-semibold text-navy-800 mb-2 flex items-center gap-2">
+                  <span className="w-5 h-5 bg-gold-accent text-navy-800 rounded flex items-center justify-center text-xs font-bold">D</span>
+                  Deskripsi Singkat
+                </h3>
+                <p className="text-slate-700 leading-relaxed">{c.description}</p>
+              </section>
+            )}
             {c.vision && (
               <section>
                 <h3 className="font-semibold text-navy-800 mb-2 flex items-center gap-2">
@@ -115,6 +124,15 @@ export const CandidateDetailPage: React.FC = () => {
                   Misi
                 </h3>
                 <p className="text-slate-700 leading-relaxed">{c.mission}</p>
+              </section>
+            )}
+            {c.work_program && (
+              <section>
+                <h3 className="font-semibold text-navy-800 mb-2 flex items-center gap-2">
+                  <span className="w-5 h-5 bg-gold-accent text-navy-800 rounded flex items-center justify-center text-xs font-bold">W</span>
+                  Program Kerja
+                </h3>
+                <p className="text-slate-700 leading-relaxed">{c.work_program}</p>
               </section>
             )}
             {c.profile && (

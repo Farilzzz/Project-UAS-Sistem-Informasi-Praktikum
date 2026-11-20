@@ -6,11 +6,16 @@ import { MemoryRouter } from 'react-router-dom';
 import { FinalDecisionPage } from './FinalDecisionPage';
 import { ToastProvider } from '@/components/ui/Toast';
 import { ApiError } from '@/services/api';
-import { RatifiedDecision, VotingStatusResponse } from '@/types';
+import { RatifiedDecision, VotingStatusResponse, Candidate, Criterion, SawResponse, BordaResponse } from '@/types';
 
 const statusMock = vi.fn();
 const finalDecisionMock = vi.fn();
 const approveMock = vi.fn();
+const electionMock = vi.fn();
+const candidatesMock = vi.fn();
+const criteriaMock = vi.fn();
+const sawMock = vi.fn();
+const bordaMock = vi.fn();
 const userState: { role: 'chair' | 'member' | 'voter' } = { role: 'chair' };
 
 vi.mock('@/services/api', async (importOriginal) => {
@@ -21,6 +26,11 @@ vi.mock('@/services/api', async (importOriginal) => {
       getVotingStatus: () => statusMock(),
       getFinalDecision: () => finalDecisionMock(),
       approveDecision: (reason: string) => approveMock(reason),
+      getElection: () => electionMock(),
+      getCandidates: () => candidatesMock(),
+      getCriteria: () => criteriaMock(),
+      getSawResults: () => sawMock(),
+      getBordaResults: () => bordaMock(),
     },
   };
 });
@@ -45,6 +55,7 @@ const baseStatus: VotingStatusResponse = {
   ratified_decision: null,
   can_chair_open: false,
   can_chair_approve: false,
+  electorate: [],
 };
 
 const ratifiedDecision: RatifiedDecision = {
@@ -84,8 +95,19 @@ describe('FinalDecisionPage', () => {
     statusMock.mockReset();
     finalDecisionMock.mockReset();
     approveMock.mockReset();
+    electionMock.mockReset();
+    candidatesMock.mockReset();
+    criteriaMock.mockReset();
+    sawMock.mockReset();
+    bordaMock.mockReset();
     userState.role = 'chair';
     finalDecisionMock.mockRejectedValue(new ApiError(404, 'Keputusan final belum tersedia.'));
+    electionMock.mockResolvedValue({ success: true, message: 'ok', data: null });
+    candidatesMock.mockResolvedValue({ success: true, message: 'ok', data: [] });
+    criteriaMock.mockResolvedValue({ success: true, message: 'ok', data: [] });
+    sawMock.mockResolvedValue({ success: true, message: 'ok', data: null });
+    bordaMock.mockResolvedValue({ success: true, message: 'ok', data: null });
+    window.print = vi.fn();
   });
 
   it('menampilkan status voting belum dibuka dan aksi Ketua Panel', async () => {
@@ -211,9 +233,27 @@ describe('FinalDecisionPage', () => {
     expect((await screen.findAllByText('Keputusan Telah Disahkan')).length).toBeGreaterThan(0);
     expect(screen.getAllByText('Kandidat A').length).toBeGreaterThan(0);
     expect(screen.getByText('Detail Pengesahan')).toBeInTheDocument();
-    expect(screen.getByText('DM Satu')).toBeInTheDocument();
-    expect(screen.getByText('Konsensus panel tercapai.')).toBeInTheDocument();
+    expect(screen.getAllByText('DM Satu').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Konsensus panel tercapai.').length).toBeGreaterThan(0);
     expect(screen.queryByText('Keputusan belum disahkan')).not.toBeInTheDocument();
+  });
+
+  it('merender persentase string dari backend DECIMAL tanpa crash (regresi toFixed)', async () => {
+    const stringPercentageDecision: RatifiedDecision = { ...ratifiedDecision, percentage: '66.67' };
+    statusMock.mockResolvedValue({
+      success: true,
+      message: 'ok',
+      data: {
+        ...baseStatus,
+        session_status: 'ratified',
+        current_round: 2,
+        ratified_decision: stringPercentageDecision,
+      },
+    });
+    finalDecisionMock.mockResolvedValue({ success: true, message: 'ok', data: stringPercentageDecision });
+
+    expect(() => renderPage()).not.toThrow();
+    expect((await screen.findAllByText('66.67%')).length).toBeGreaterThan(0);
   });
 
   it('memperlakukan 404 keputusan final sebagai kondisi kosong, bukan error', async () => {
@@ -292,5 +332,91 @@ describe('FinalDecisionPage', () => {
     ).toBeGreaterThan(0);
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(approveMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('merender Berita Acara 12 bagian dengan 3 slot panel dan tombol cetak', async () => {
+    const candidates: Candidate[] = [
+      { id: 1, session_id: 1, name: 'Kandidat A', vision: 'Visi A', mission: null, profile: null },
+    ];
+    const criteria: Criterion[] = [
+      { id: 1, session_id: 1, code: 'C1', name: 'Kriteria 1', description: '', weight: 100, type: 'benefit', is_finalized: true },
+    ];
+    const saw: SawResponse = {
+      dm_user_id: 1,
+      dm_name: 'DM Satu',
+      rankings: [
+        { candidate_id: 1, candidate_name: 'Kandidat A', final_score: 0.875, rank: 1, breakdown: {} },
+      ],
+    };
+    const borda: BordaResponse = {
+      total_points_distributed: 3,
+      rankings: [
+        { candidate_id: 1, candidate_name: 'Kandidat A', borda_points: 3, borda_value: 1, percentage: 100, rank: 1 },
+      ],
+      dm_breakdown: {},
+    };
+    const electorate = [
+      { user_id: 1, username: 'dm1', name: 'DM Satu', role: 'chair' as const, has_voted: true },
+      { user_id: 2, username: 'dm2', name: 'DM Dua', role: 'member' as const, has_voted: true },
+      { user_id: 3, username: 'dm3', name: 'DM Tiga', role: 'member' as const, has_voted: true },
+    ];
+    const evaluation = {
+      status: 'majority' as const,
+      is_completed: true,
+      total_votes_cast: 2,
+      winner: null,
+      tallies: [
+        { candidate_id: 1, candidate_name: 'Kandidat A', votes: 2, percentage: 100 },
+      ],
+    };
+
+    statusMock.mockResolvedValue({
+      success: true,
+      message: 'ok',
+      data: {
+        ...baseStatus,
+        session_status: 'ratified',
+        current_round: 1,
+        ratified_decision: ratifiedDecision,
+        electorate,
+        evaluation,
+      },
+    });
+    finalDecisionMock.mockResolvedValue({ success: true, message: 'ok', data: ratifiedDecision });
+    candidatesMock.mockResolvedValue({ success: true, message: 'ok', data: candidates });
+    criteriaMock.mockResolvedValue({ success: true, message: 'ok', data: criteria });
+    sawMock.mockResolvedValue({ success: true, message: 'ok', data: saw });
+    bordaMock.mockResolvedValue({ success: true, message: 'ok', data: borda });
+
+    const user = userEvent.setup();
+    renderPage();
+
+    expect(await screen.findByTestId('official-decision-report')).toBeInTheDocument();
+    const headings = [
+      '1. Identitas Dokumen',
+      '2. Deskripsi Siklus',
+      '3. Dasar Pengambilan Keputusan',
+      '4. Waktu & Status Pengesahan',
+      '5. Susunan Panel Decision Maker',
+      '6. Daftar Kriteria Penilaian',
+      '7. Daftar Kandidat',
+      '8. Hasil Penilaian SAW',
+      '9. Hasil Penilaian Borda',
+      '10. Rekapitulasi Perolehan Suara',
+      '11. Hasil Akhir Pemilihan',
+      '12. Pernyataan Pengesahan & Tanda Tangan',
+    ];
+    headings.forEach((heading) => {
+      expect(screen.getByText(heading)).toBeInTheDocument();
+    });
+
+    const report = screen.getByTestId('official-decision-report');
+    expect(report).toHaveTextContent('DM Satu');
+    expect(report).toHaveTextContent('DM Dua');
+    expect(report).toHaveTextContent('DM Tiga');
+    expect(report).not.toHaveTextContent('Nama panelis — diisi resmi');
+
+    await user.click(screen.getByTestId('print-official-report'));
+    expect(window.print).toHaveBeenCalledTimes(1);
   });
 });

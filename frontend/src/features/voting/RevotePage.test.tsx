@@ -59,6 +59,7 @@ const tieStatus: VotingStatusResponse = {
   ratified_decision: null,
   can_chair_open: false,
   can_chair_approve: false,
+  electorate: [],
 };
 
 const results: VotingResultsResponse = {

@@ -10,6 +10,9 @@ import {
   Trophy,
   Vote,
   BadgeCheck,
+  History,
+  PlusCircle,
+  ScrollText,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -52,6 +55,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   // Role-based navigation
   const isVoter = user?.role === 'voter';
+  const isChair = user?.role === 'chair';
 
   const navItems = isVoter
     ? [
@@ -60,6 +64,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         { label: 'Voting', path: '/voting', icon: Vote },
         { label: 'Hasil Voting', path: '/voting/results', icon: Trophy },
         { label: 'Keputusan', path: '/decisions/final', icon: BadgeCheck },
+        { label: 'Riwayat Pemilihan', path: '/elections', icon: History },
       ]
     : [
         { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -70,6 +75,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         { label: 'Hasil Borda', path: '/results/borda', icon: Trophy },
         { label: 'Voting', path: '/voting', icon: Vote },
         { label: 'Keputusan', path: '/decisions/final', icon: BadgeCheck },
+        { label: 'Riwayat Pemilihan', path: '/elections', icon: History },
+        ...(isChair
+          ? [
+              { label: 'Pemilihan Baru', path: '/elections/new', icon: PlusCircle },
+              { label: 'Log Aktivitas', path: '/audit-logs', icon: ScrollText },
+            ]
+          : []),
       ];
 
   const getRoleBadge = (role?: string) => {
@@ -95,7 +107,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Mobile backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          className="fixed inset-0 bg-black/50 z-30 md:hidden no-print"
           onClick={() => setMobileOpen(false)}
           aria-hidden="true"
         />
@@ -105,7 +117,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <aside
         id="app-sidebar"
         className={[
-          'bg-navy-800 text-white transition-all duration-300 flex flex-col shadow-lg z-40',
+          'bg-navy-800 text-white transition-all duration-300 flex flex-col shadow-lg z-40 no-print',
           'fixed inset-y-0 left-0 md:static md:inset-auto',
           mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
           sidebarOpen ? 'md:w-64' : 'md:w-20',
@@ -180,7 +192,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
-        <div className="bg-white border-b border-slate-200 px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-3 shadow-sm">
+        <div className="bg-white border-b border-slate-200 px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-3 shadow-sm no-print">
           <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={() => setMobileOpen(true)}

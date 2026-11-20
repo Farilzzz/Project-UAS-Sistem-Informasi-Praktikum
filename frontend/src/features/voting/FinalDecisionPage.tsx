@@ -15,11 +15,23 @@ import {
   Vote,
   ClipboardCheck,
   ShieldCheck,
+  Printer,
 } from 'lucide-react';
 import { api, describeApiError, isApiError } from '@/services/api';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useToast } from '@/components/ui/Toast';
-import type { VotingStatusResponse } from '@/types';
+import type {
+  VotingStatusResponse,
+  Candidate,
+  SawResponse,
+  BordaResponse,
+  ElectionDetail,
+  ElectorateVoterStatus,
+  VotingEvaluation,
+  RatifiedDecision,
+  Criterion,
+} from '@/types';
+import { ElectorateMonitor } from '@/components/ElectorateMonitor';
 
 type StageState = 'done' | 'active' | 'pending';
 
@@ -197,6 +209,354 @@ const StageIcon: React.FC<{ state: StageState }> = ({ state }) => {
   return <span className="h-2 w-2 rounded-full bg-slate-300" aria-hidden="true" />;
 };
 
+const formatReportDate = (value: string): string => {
+  try {
+    return new Date(value.replace(' ', 'T')).toLocaleString('id-ID', {
+      dateStyle: 'long',
+      timeStyle: 'short',
+    });
+  } catch {
+    return value;
+  }
+};
+
+interface OfficialReportProps {
+  decision: RatifiedDecision;
+  election: ElectionDetail | null;
+  criteria: Criterion[];
+  candidates: Candidate[];
+  saw: SawResponse | null;
+  borda: BordaResponse | null;
+  electorate: ElectorateVoterStatus[];
+  evaluation: VotingEvaluation | null;
+  statusLabel: string;
+}
+
+const PANEL_PLACEHOLDER = 'Nama panelis — diisi resmi';
+
+const OfficialDecisionReport: React.FC<OfficialReportProps> = ({
+  decision,
+  election,
+  criteria,
+  candidates,
+  saw,
+  borda,
+  electorate,
+  evaluation,
+  statusLabel,
+}) => {
+  const printedAt = new Date();
+  const electorateByUsername = (username: string) => electorate.find((v) => v.username === username)?.name ?? null;
+  const panelists = [
+    {
+      username: 'dm1',
+      role: 'Ketua Panel (DM1)',
+      name: electorateByUsername('dm1') ?? decision.approved_by_name ?? PANEL_PLACEHOLDER,
+    },
+    {
+      username: 'dm2',
+      role: 'Anggota Panel (DM2)',
+      name: electorateByUsername('dm2') ?? PANEL_PLACEHOLDER,
+    },
+    {
+      username: 'dm3',
+      role: 'Anggota Panel (DM3)',
+      name: electorateByUsername('dm3') ?? PANEL_PLACEHOLDER,
+    },
+  ];
+
+  return (
+    <section
+      className="official-report mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow sm:p-10"
+      data-testid="official-decision-report"
+      aria-label="Berita Acara Keputusan Resmi"
+    >
+      <div className="report-header border-b-2 border-navy-800 pb-5 text-center">
+        <p className="text-xs font-bold uppercase tracking-[0.25em] text-navy-700">PILPRESS</p>
+        <p className="mt-1 text-xs text-slate-500">
+          Sistem Pendukung Keputusan Kelompok — Pemilihan Calon Presiden
+        </p>
+        <h2 className="mt-4 text-xl font-extrabold uppercase tracking-wide text-navy-800 sm:text-2xl">
+          Berita Acara Keputusan Resmi
+        </h2>
+        <p className="mt-2 text-sm text-slate-600">
+          Dokumen ini merupakan catatan resmi hasil pemilihan yang disahkan oleh panel Decision Maker.
+        </p>
+      </div>
+
+      {/* 1. Identitas Dokumen */}
+      <section className="report-section mt-6">
+        <h3 className="mb-2 text-sm font-bold uppercase tracking-wide text-navy-800">1. Identitas Dokumen</h3>
+        <table className="report-meta w-full text-sm">
+          <tbody>
+            <tr>
+              <th scope="row" className="w-48 py-1.5 text-left font-semibold text-slate-600">Nama Siklus</th>
+              <td className="py-1.5 font-medium text-navy-800">
+                {election?.session.title ?? `Siklus Pemilihan #${decision.session_id}`}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" className="py-1.5 text-left font-semibold text-slate-600">ID Sesi</th>
+              <td className="py-1.5 font-mono text-navy-800">#{decision.session_id}</td>
+            </tr>
+            <tr>
+              <th scope="row" className="py-1.5 text-left font-semibold text-slate-600">Tanggal Cetak</th>
+              <td className="py-1.5 text-slate-600">
+                {printedAt.toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' })}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      {/* 2. Deskripsi Siklus */}
+      <section className="report-section mt-5">
+        <h3 className="mb-2 text-sm font-bold uppercase tracking-wide text-navy-800">2. Deskripsi Siklus</h3>
+        <p className="text-sm text-slate-700">
+          {election?.session.description || 'Deskripsi siklus tidak tersedia pada data sesi ini.'}
+        </p>
+      </section>
+
+      {/* 3. Dasar Pengambilan Keputusan */}
+      <section className="report-section mt-5">
+        <h3 className="mb-2 text-sm font-bold uppercase tracking-wide text-navy-800">3. Dasar Pengambilan Keputusan</h3>
+        <p className="text-sm leading-relaxed text-slate-700">
+          Keputusan dihasilkan oleh sistem pendukung keputusan kelompok melalui tahapan: penilaian
+          kriteria dengan metode SAW, agregasi preferensi dengan metode Borda, pemungutan suara panel,
+          dan pengesahan oleh Ketua Panel. Seluruh angka pada berita acara ini bersumber dari data resmi
+          siklus yang tersimpan di sistem; tidak ada nilai yang direkayasa saat pencetakan.
+        </p>
+      </section>
+
+      {/* 4. Waktu & Status Pengesahan */}
+      <section className="report-section mt-5">
+        <h3 className="mb-2 text-sm font-bold uppercase tracking-wide text-navy-800">4. Waktu &amp; Status Pengesahan</h3>
+        <table className="report-meta w-full text-sm">
+          <tbody>
+            <tr>
+              <th scope="row" className="w-48 py-1.5 text-left font-semibold text-slate-600">Tanggal Keputusan</th>
+              <td className="py-1.5 text-navy-800">{formatReportDate(decision.approved_at)}</td>
+            </tr>
+            <tr>
+              <th scope="row" className="py-1.5 text-left font-semibold text-slate-600">Status Keputusan</th>
+              <td className="py-1.5 text-navy-800">{statusLabel}</td>
+            </tr>
+            <tr>
+              <th scope="row" className="py-1.5 text-left font-semibold text-slate-600">Putaran Pengesahan</th>
+              <td className="py-1.5 text-navy-800">#{decision.round_number ?? decision.round_id}</td>
+            </tr>
+            <tr>
+              <th scope="row" className="py-1.5 text-left font-semibold text-slate-600">Disahkan Oleh</th>
+              <td className="py-1.5 text-navy-800">{decision.approved_by_name}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      {/* 5. Susunan Panel Decision Maker */}
+      <section className="report-section mt-5">
+        <h3 className="mb-2 text-sm font-bold uppercase tracking-wide text-navy-800">5. Susunan Panel Decision Maker</h3>
+        <ul className="list-inside list-decimal space-y-1 text-sm text-slate-700">
+          {panelists.map((panelist) => (
+            <li key={panelist.username}>
+              <span className="font-medium">{panelist.name}</span> — {panelist.role}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* 6. Daftar Kriteria Penilaian */}
+      <section className="report-section mt-5">
+        <h3 className="mb-2 text-sm font-bold uppercase tracking-wide text-navy-800">6. Daftar Kriteria Penilaian</h3>
+        {criteria.length === 0 ? (
+          <p className="text-sm text-slate-500">Data kriteria tidak tersedia pada sesi ini.</p>
+        ) : (
+          <table className="report-table w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-slate-100 text-left">
+                <th className="border border-slate-300 px-3 py-2">Kode</th>
+                <th className="border border-slate-300 px-3 py-2">Nama Kriteria</th>
+                <th className="border border-slate-300 px-3 py-2 text-right">Bobot</th>
+                <th className="border border-slate-300 px-3 py-2">Jenis</th>
+              </tr>
+            </thead>
+            <tbody>
+              {criteria.map((criterion) => (
+                <tr key={criterion.id}>
+                  <td className="border border-slate-300 px-3 py-2 font-mono">{criterion.code}</td>
+                  <td className="border border-slate-300 px-3 py-2">{criterion.name}</td>
+                  <td className="border border-slate-300 px-3 py-2 text-right font-mono">
+                    {Number(criterion.weight).toFixed(2)}
+                  </td>
+                  <td className="border border-slate-300 px-3 py-2">{criterion.type === 'cost' ? 'Biaya' : 'Keuntungan'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      {/* 7. Daftar Kandidat */}
+      <section className="report-section mt-6">
+        <h3 className="mb-3 text-sm font-bold uppercase tracking-wide text-navy-800">7. Daftar Kandidat</h3>
+        {candidates.length === 0 ? (
+          <p className="text-sm text-slate-500">Data kandidat tidak tersedia pada sesi ini.</p>
+        ) : (
+          <table className="report-table w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-slate-100 text-left">
+                <th className="border border-slate-300 px-3 py-2">No</th>
+                <th className="border border-slate-300 px-3 py-2">Nama Kandidat</th>
+                <th className="border border-slate-300 px-3 py-2">Visi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {candidates.map((candidate, index) => (
+                <tr key={candidate.id}>
+                  <td className="border border-slate-300 px-3 py-2">{index + 1}</td>
+                  <td className="border border-slate-300 px-3 py-2 font-medium">{candidate.name}</td>
+                  <td className="border border-slate-300 px-3 py-2">{candidate.vision ?? '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      {/* 8. Hasil Penilaian SAW */}
+      <section className="report-section mt-6">
+        <h3 className="mb-3 text-sm font-bold uppercase tracking-wide text-navy-800">
+          8. Hasil Penilaian SAW{saw ? ` — Penilaian ${saw.dm_name}` : ''}
+        </h3>
+        {!saw || saw.rankings.length === 0 ? (
+          <p className="text-sm text-slate-500">Data hasil SAW tidak tersedia.</p>
+        ) : (
+          <table className="report-table w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-slate-100 text-left">
+                <th className="border border-slate-300 px-3 py-2">Peringkat</th>
+                <th className="border border-slate-300 px-3 py-2">Kandidat</th>
+                <th className="border border-slate-300 px-3 py-2 text-right">Nilai Akhir</th>
+              </tr>
+            </thead>
+            <tbody>
+              {saw.rankings.map((row) => (
+                <tr key={row.candidate_id}>
+                  <td className="border border-slate-300 px-3 py-2">{row.rank}</td>
+                  <td className="border border-slate-300 px-3 py-2">{row.candidate_name}</td>
+                  <td className="border border-slate-300 px-3 py-2 text-right font-mono">{row.final_score.toFixed(4)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      {/* 9. Hasil Penilaian Borda */}
+      <section className="report-section mt-6">
+        <h3 className="mb-3 text-sm font-bold uppercase tracking-wide text-navy-800">9. Hasil Penilaian Borda</h3>
+        {!borda || borda.rankings.length === 0 ? (
+          <p className="text-sm text-slate-500">Data hasil Borda tidak tersedia.</p>
+        ) : (
+          <table className="report-table w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-slate-100 text-left">
+                <th className="border border-slate-300 px-3 py-2">Peringkat</th>
+                <th className="border border-slate-300 px-3 py-2">Kandidat</th>
+                <th className="border border-slate-300 px-3 py-2 text-right">Poin</th>
+                <th className="border border-slate-300 px-3 py-2 text-right">Persentase</th>
+              </tr>
+            </thead>
+            <tbody>
+              {borda.rankings.map((row) => (
+                <tr key={row.candidate_id}>
+                  <td className="border border-slate-300 px-3 py-2">{row.rank}</td>
+                  <td className="border border-slate-300 px-3 py-2">{row.candidate_name}</td>
+                  <td className="border border-slate-300 px-3 py-2 text-right font-mono">{row.borda_points}</td>
+                  <td className="border border-slate-300 px-3 py-2 text-right font-mono">{row.percentage.toFixed(2)}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      {/* 10. Rekapitulasi Perolehan Suara */}
+      <section className="report-section mt-6">
+        <h3 className="mb-3 text-sm font-bold uppercase tracking-wide text-navy-800">10. Rekapitulasi Perolehan Suara</h3>
+        {!evaluation || evaluation.tallies.length === 0 ? (
+          <p className="text-sm text-slate-500">Data perolehan suara tidak tersedia.</p>
+        ) : (
+          <table className="report-table w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-slate-100 text-left">
+                <th className="border border-slate-300 px-3 py-2">Kandidat</th>
+                <th className="border border-slate-300 px-3 py-2 text-right">Suara</th>
+                <th className="border border-slate-300 px-3 py-2 text-right">Persentase</th>
+              </tr>
+            </thead>
+            <tbody>
+              {evaluation.tallies.map((row) => (
+                <tr key={row.candidate_id}>
+                  <td className="border border-slate-300 px-3 py-2">{row.candidate_name}</td>
+                  <td className="border border-slate-300 px-3 py-2 text-right font-mono">{row.votes}</td>
+                  <td className="border border-slate-300 px-3 py-2 text-right font-mono">{row.percentage.toFixed(2)}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+
+      {/* 11. Hasil Akhir Pemilihan */}
+      <section className="report-section report-final mt-6">
+        <h3 className="mb-3 text-sm font-bold uppercase tracking-wide text-navy-800">11. Hasil Akhir Pemilihan</h3>
+        <div className="rounded-lg border-2 border-navy-800 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Kandidat Terpilih</p>
+          <p className="mt-1 text-2xl font-extrabold text-navy-800">{decision.candidate_name}</p>
+          <div className="mt-3 grid grid-cols-2 gap-4 text-sm">
+            <p>
+              <span className="font-semibold text-slate-600">Perolehan suara: </span>
+              {decision.total_votes} suara
+            </p>
+            <p>
+              <span className="font-semibold text-slate-600">Persentase: </span>
+              {Number(decision.percentage).toFixed(2)}%
+            </p>
+          </div>
+          <p className="mt-3 text-sm text-slate-700">
+            <span className="font-semibold">Alasan pengesahan: </span>
+            {decision.reason}
+          </p>
+        </div>
+      </section>
+
+      {/* 12. Pernyataan Pengesahan &amp; Tanda Tangan */}
+      <section className="report-section report-signatures mt-10">
+        <h3 className="mb-4 text-sm font-bold uppercase tracking-wide text-navy-800">
+          12. Pernyataan Pengesahan &amp; Tanda Tangan
+        </h3>
+        <p className="mb-8 text-sm leading-relaxed text-slate-700">
+          Demikian berita acara ini dibuat untuk digunakan sebagaimana mestinya. Pengesahan dilakukan
+          secara manual oleh panelis yang namanya tercantum di bawah ini. Sistem tidak menghasilkan
+          tanda tangan digital dan tidak mengubah data keputusan selama proses cetak.
+        </p>
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+          {panelists.map((panelist) => (
+            <div key={panelist.username} className="text-center">
+              <p className="min-h-[2.5rem] text-sm font-semibold text-navy-800">{panelist.name}</p>
+              <p className="mt-1 text-xs text-slate-600">{panelist.role}</p>
+              <div className="mt-12 border-t border-slate-500 pt-2 text-xs text-slate-500">
+                Tanda tangan
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </section>
+  );
+};
+
 export const FinalDecisionPage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -225,6 +585,65 @@ export const FinalDecisionPage: React.FC = () => {
     },
     // 404 = belum ada keputusan (kondisi normal), bukan kegagalan.
     retry: (failureCount, err) => !(isApiError(err) && err.status === 404) && failureCount < 2,
+  });
+
+  const decisionSessionId = decisionQuery.data?.session_id;
+  const hasDecision = Boolean(decisionQuery.data);
+
+  const electionQuery = useQuery({
+    queryKey: ['elections', decisionSessionId],
+    queryFn: async () => {
+      if (decisionSessionId === undefined) throw new Error('Sesi keputusan tidak tersedia');
+      const res = await api.getElection(decisionSessionId);
+      if (res.success && res.data) return res.data;
+      throw new Error(res.message || 'Gagal memuat detail siklus pemilihan');
+    },
+    enabled: hasDecision,
+    retry: false,
+  });
+
+  const candidatesQuery = useQuery({
+    queryKey: ['candidates', decisionSessionId],
+    queryFn: async () => {
+      const res = await api.getCandidates(decisionSessionId);
+      if (res.success && res.data) return res.data;
+      throw new Error(res.message || 'Gagal memuat daftar kandidat');
+    },
+    enabled: hasDecision,
+    retry: false,
+  });
+
+  const criteriaQuery = useQuery({
+    queryKey: ['criteria', decisionSessionId],
+    queryFn: async () => {
+      const res = await api.getCriteria(decisionSessionId);
+      if (res.success && res.data) return res.data;
+      throw new Error(res.message || 'Gagal memuat daftar kriteria');
+    },
+    enabled: hasDecision,
+    retry: false,
+  });
+
+  const sawQuery = useQuery({
+    queryKey: ['results', 'saw', 'me'],
+    queryFn: async () => {
+      const res = await api.getSawResults();
+      if (res.success && res.data) return res.data;
+      throw new Error(res.message || 'Gagal memuat hasil SAW');
+    },
+    enabled: hasDecision,
+    retry: false,
+  });
+
+  const bordaQuery = useQuery({
+    queryKey: ['results', 'borda'],
+    queryFn: async () => {
+      const res = await api.getBordaResults();
+      if (res.success && res.data) return res.data;
+      throw new Error(res.message || 'Gagal memuat hasil Borda');
+    },
+    enabled: hasDecision,
+    retry: false,
   });
 
   const approveMut = useMutation({
@@ -363,10 +782,21 @@ export const FinalDecisionPage: React.FC = () => {
             Keputusan resmi hasil konsensus panel pemilihan calon presiden.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={handleRetry}
-          disabled={isRetrying}
+        <div className="flex flex-wrap gap-2 no-print">
+          {decision && (
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="inline-flex items-center gap-2 rounded-lg bg-gold-accent px-4 py-2 text-sm font-semibold text-navy-800 shadow-sm transition hover:bg-gold-hover"
+              data-testid="print-official-report"
+            >
+              <Printer className="h-4 w-4" aria-hidden="true" /> Cetak Berita Acara
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={handleRetry}
+            disabled={isRetrying}
           className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-navy-800 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isRetrying ? (
@@ -378,7 +808,8 @@ export const FinalDecisionPage: React.FC = () => {
               <RefreshCw className="h-4 w-4" aria-hidden="true" /> Muat Ulang
             </>
           )}
-        </button>
+          </button>
+        </div>
       </div>
 
       {/* ── Status Saat Ini ── */}
@@ -433,7 +864,7 @@ export const FinalDecisionPage: React.FC = () => {
               </div>
               <div>
                 <p className="mb-1 text-xs font-semibold uppercase tracking-wide">Persentase</p>
-                <p className="text-2xl font-bold">{decision.percentage.toFixed(2)}%</p>
+                <p className="text-2xl font-bold">{Number(decision.percentage).toFixed(2)}%</p>
               </div>
             </div>
           </div>
@@ -487,6 +918,16 @@ export const FinalDecisionPage: React.FC = () => {
           <p className="mt-1 text-xs text-slate-500">Hasil: {outcomeLabel}</p>
         </div>
       </div>
+
+      {/* ── Monitoring Pemilih Resmi ── */}
+      {statusData?.electorate && statusData.electorate.length > 0 && (
+        <ElectorateMonitor
+          electorate={statusData.electorate}
+          votesCast={votesCast}
+          totalVoters={eligibleVoters}
+          currentRound={statusData.current_round}
+        />
+      )}
 
       {/* ── Ringkasan Hasil Voting (belum disahkan) ── */}
       {!decision && evaluation && evaluation.tallies.length > 0 && (
@@ -585,6 +1026,21 @@ export const FinalDecisionPage: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── Berita Acara Resmi (dapat dicetak) ── */}
+      {decision && (
+        <OfficialDecisionReport
+          decision={decision}
+          election={electionQuery.data ?? null}
+          criteria={criteriaQuery.data ?? []}
+          candidates={candidatesQuery.data ?? []}
+          saw={sawQuery.data ?? null}
+          borda={bordaQuery.data ?? null}
+          electorate={statusData?.electorate ?? []}
+          evaluation={evaluation}
+          statusLabel={stateView.label}
+        />
       )}
 
       {/* ── Aksi Sesuai Peran ── */}

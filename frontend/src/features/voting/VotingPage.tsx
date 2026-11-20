@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { api, describeApiError, isApiError } from '@/services/api';
 import { useAuth } from '@/features/auth/AuthContext';
 import { Candidate } from '@/types';
+import { ElectorateMonitor } from '@/components/ElectorateMonitor';
 import {
   CheckCircle2,
   AlertTriangle,
@@ -274,6 +275,16 @@ export const VotingPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* ── Monitoring Pemilih Resmi ── */}
+      {statusData.electorate && statusData.electorate.length > 0 && (
+        <ElectorateMonitor
+          electorate={statusData.electorate}
+          votesCast={votesCast}
+          totalVoters={totalVoters}
+          currentRound={statusData.current_round}
+        />
+      )}
 
       {/* ── Ineligible Notice ── */}
       {!isEligible && statusData.session_status === 'voting' && (

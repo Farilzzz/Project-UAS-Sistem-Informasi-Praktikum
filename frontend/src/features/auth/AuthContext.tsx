@@ -45,8 +45,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         await logout();
       }
-    } catch {
-      await logout();
+    } catch (err) {
+      // Hanya logout pada 401/403 — jangan logout pada error jaringan/500
+      if (err instanceof Error && 'status' in err) {
+        const status = (err as { status: number }).status;
+        if (status === 401 || status === 403) {
+          await logout();
+        }
+      }
+      // Simpan user lama untuk memungkinkan retry
     } finally {
       setIsLoading(false);
     }
@@ -60,15 +67,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [refreshProfile]);
 
   const login = async (username: string, password: string) => {
-    setIsLoading(true);
-    try {
-      const res = await api.login(username, password);
-      if (res.success && res.data.user) {
-        setUser(res.data.user);
-      }
-    } finally {
-      setIsLoading(false);
+    // Jangan set global isLoading — biarkan komponen handle loading lokal
+    const res = await api.login(username, password);
+    if (res.success && res.data.user) {
+      setUser(res.data.user);
     }
+    // Jika gagal, error dilempar dan ditangkap caller
   };
 
   return (

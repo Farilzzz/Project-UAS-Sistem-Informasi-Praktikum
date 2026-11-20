@@ -201,7 +201,7 @@ export const DecisionHistoryPage: React.FC = () => {
                   Suara: <strong>{finalDecision.total_votes}</strong>
                 </span>
                 <span>
-                  Persentase: <strong>{finalDecision.percentage.toFixed(2)}%</strong>
+                  Persentase: <strong>{Number(finalDecision.percentage).toFixed(2)}%</strong>
                 </span>
               </div>
             </div>

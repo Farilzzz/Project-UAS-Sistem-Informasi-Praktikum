@@ -18,21 +18,34 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- 2. Tabel Kandidat Presiden (Alternatif)
 CREATE TABLE IF NOT EXISTS `candidates` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
+    -- Phase 5: data master terisolasi per sesi
+    `session_id` INT NULL,
     `name` VARCHAR(100) NOT NULL,
+    `description` TEXT NULL,
     `vision` TEXT NULL,
     `mission` TEXT NULL,
+    `work_program` TEXT NULL,
     `profile` TEXT NULL,
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    `is_finalized` TINYINT(1) NOT NULL DEFAULT 0,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NULL DEFAULT NULL,
+    KEY `idx_candidates_session` (`session_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 3. Tabel Kriteria Penilaian
 CREATE TABLE IF NOT EXISTS `criteria` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
+    -- Phase 5: data master terisolasi per sesi
+    `session_id` INT NULL,
     `code` VARCHAR(10) NOT NULL UNIQUE,
     `name` VARCHAR(120) NOT NULL,
+    `description` TEXT NULL,
     `weight` INT NOT NULL CHECK (`weight` > 0),
     `type` ENUM('benefit', 'cost') NOT NULL DEFAULT 'benefit',
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    `is_finalized` TINYINT(1) NOT NULL DEFAULT 0,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NULL DEFAULT NULL,
+    KEY `idx_criteria_session` (`session_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 4. Tabel Sesi Keputusan (Decision Sessions)
@@ -42,8 +55,13 @@ CREATE TABLE IF NOT EXISTS `decision_sessions` (
     `description` TEXT NULL,
     `status` ENUM('assessment', 'voting', 'tie_revote', 'voting_completed', 'ratified') NOT NULL DEFAULT 'assessment',
     `current_round` INT NOT NULL DEFAULT 0,
+    -- Phase 4: jejak siklus pemilihan (nullable -> session lama tetap valid)
+    `created_by` INT NULL,
+    `previous_session_id` INT NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT `fk_ds_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+    CONSTRAINT `fk_ds_previous_session` FOREIGN KEY (`previous_session_id`) REFERENCES `decision_sessions` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 5. Tabel Penilaian Individual (Assessments Matrix)
@@ -148,5 +166,12 @@ CREATE TABLE IF NOT EXISTS `audit_logs` (
     `details` TEXT NOT NULL,
     `ip_address` VARCHAR(45) NULL,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX `idx_audit_session` (`session_id`),
     CONSTRAINT `fk_audit_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Phase 5: foreign key data master per sesi (didefinisikan setelah decision_sessions)
+ALTER TABLE `criteria`
+    ADD CONSTRAINT `fk_criteria_session` FOREIGN KEY (`session_id`) REFERENCES `decision_sessions` (`id`) ON DELETE CASCADE;
+ALTER TABLE `candidates`
+    ADD CONSTRAINT `fk_candidates_session` FOREIGN KEY (`session_id`) REFERENCES `decision_sessions` (`id`) ON DELETE CASCADE;

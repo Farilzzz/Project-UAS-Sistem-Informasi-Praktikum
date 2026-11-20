@@ -89,6 +89,14 @@ export const AssessmentInputPage: React.FC = () => {
   const candList = candidates ?? [];
   const critList = criteria ?? [];
 
+  // Determine readiness
+  const criteriaFinalized = critList.length > 0 && critList.every((c) => c.is_finalized);
+  const candidatesFinalized = candList.length > 0 && candList.every((c) => c.is_finalized);
+  const criteriaAvailable = critList.length > 0;
+  const candidatesAvailable = candList.length > 0;
+
+  const isReady = criteriaFinalized && candidatesFinalized;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -123,7 +131,48 @@ export const AssessmentInputPage: React.FC = () => {
         </div>
       )}
 
+      {/* Empty state when master data not ready */}
+      {!isReady && (
+        <div className="bg-white rounded-xl shadow border border-slate-100 p-8 text-center" data-testid="assessment-empty-state">
+          <CheckCircle2 className="w-10 h-10 text-slate-300 mx-auto mb-3" aria-hidden="true" />
+          <h2 className="text-lg font-bold text-navy-800">Penilaian belum dapat dimulai</h2>
+          <ul className="mt-4 space-y-3 text-left max-w-xl mx-auto text-sm text-slate-600">
+            {!criteriaAvailable && (
+              <li className="flex items-start gap-2">
+                <span className="mt-1 w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span>
+                <span><strong>Kriteria belum tersedia.</strong> Ketua Panel perlu menambahkan kriteria penilaian terlebih dahulu.</span>
+              </li>
+            )}
+            {criteriaAvailable && !criteriaFinalized && (
+              <li className="flex items-start gap-2">
+                <span className="mt-1 w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span>
+                <span><strong>Kriteria belum difinalisasi.</strong> Ketua Panel perlu memfinalisasi konfigurasi kriteria sebelum penilaian dibuka.</span>
+              </li>
+            )}
+            {!candidatesAvailable && (
+              <li className="flex items-start gap-2">
+                <span className="mt-1 w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span>
+                <span><strong>Kandidat belum tersedia.</strong> Ketua Panel perlu mengajukan kandidat terlebih dahulu.</span>
+              </li>
+            )}
+            {candidatesAvailable && !candidatesFinalized && (
+              <li className="flex items-start gap-2">
+                <span className="mt-1 w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span>
+                <span><strong>Kandidat belum difinalisasi.</strong> Ketua Panel perlu memfinalisasi daftar kandidat sebelum penilaian dibuka.</span>
+              </li>
+            )}
+          </ul>
+          <p className="mt-5 text-sm text-slate-500">
+            Hubungi Ketua Panel untuk menyelesaikan konfigurasi kriteria dan kandidat pada siklus ini.
+          </p>
+          {user?.role === 'chair' && (
+            <p className="mt-2 text-xs text-slate-400">Sebagai Ketua Panel, gunakan menu Kriteria dan Kandidat pada sidebar untuk melengkapi konfigurasi.</p>
+          )}
+        </div>
+      )}
+
       {/* Matrix */}
+      {isReady && (
       <div className="bg-white rounded-xl shadow border border-slate-100 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -172,9 +221,10 @@ export const AssessmentInputPage: React.FC = () => {
           </tbody>
         </table>
       </div>
+      )}
 
       {/* Actions */}
-      {!isFinalized && (
+      {isReady && !isFinalized && (
         <div className="flex gap-3 justify-end">
           <button
             onClick={handleSave}
