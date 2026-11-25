@@ -40,7 +40,7 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md border border-slate-200">
         <h2 className="text-2xl font-bold text-navy-900 mb-2">Buat Akun Pilpress</h2>
-        <p className="text-slate-600 mb-6">Daftarkan diri Anda sebagai pemilih.</p>
+        <p className="text-slate-600 mb-6">Daftarkan akun pengamat tanpa hak suara. Voting resmi hanya untuk dm1, dm2, dan dm3.</p>
         {error && <div className="bg-red-50 text-red-700 p-3 rounded mb-4 text-sm">{error}</div>}
         <form onSubmit={handleRegister}>
           <div className="mb-4">

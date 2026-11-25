@@ -1,6 +1,6 @@
 # Sistem Informasi Pilpress — GDSS Pemilihan Calon Presiden
 
-Simulasi akademik pengambilan keputusan kelompok (GDSS) menggunakan **React + TypeScript (Vite)**, **PHP 8 Native**, **MySQL/MariaDB**: **SAW + Borda + Voting Langsung + Pengesahan Ketua + Registrasi Pemilih**.
+Simulasi akademik pengambilan keputusan kelompok (GDSS) menggunakan **React + TypeScript (Vite)**, **PHP 8 Native**, **MySQL/MariaDB**: **SAW + Borda + Voting Langsung + Pengesahan Ketua + Registrasi Pengamat**.
 Kandidat dan akun seed adalah fiktif, bukan data pemilu atau pengguna nyata.
 
 ---
@@ -22,7 +22,7 @@ Kandidat dan akun seed adalah fiktif, bukan data pemilu atau pengguna nyata.
 │   └── package.json
 ├── database/
 │   ├── schema.sql           # Sumber utama SQL instalasi baru
-│   └── seed.sql             # Seed data demo (DM + voter)
+│   └── seed.sql             # Seed data demo (tiga DM resmi)
 ├── docs/
 │   └── INTEGRATION.md       # Dokumentasi integrasi frontend-backend
 ├── ATTRIBUTION.md           # Atribusi library & aset
@@ -47,16 +47,17 @@ Kandidat dan akun seed adalah fiktif, bukan data pemilu atau pengguna nyata.
 
 ```bash
 # 1. Clone repo
-git clone https://github.com/rohmad656/Sistem-Informasi-PILPRESS-.git
-cd Sistem-Informasi-PILPRESS-
+git clone https://github.com/Farilzzz/Project-UAS-Sistem-Informasi-Praktikum.git
+cd Project-UAS-Sistem-Informasi-Praktikum
 
 # 2. Jalankan MySQL dari XAMPP Control Panel
 
 # 3. Instalasi database baru (hanya sekali)
 #    Import via phpMyAdmin atau CLI:
-#    mysql -u root < database/schema.sql
-#    mysql -u root < database/seed.sql
-#    (Nama database: gdss_pemilihan_presiden)
+#    Buat database kosong secara eksplisit terlebih dahulu.
+#    mysql -u root --database=gdss_pemilihan_presiden < database/schema.sql
+#    mysql -u root --database=gdss_pemilihan_presiden < database/seed.sql
+#    SQL tidak memilih database otomatis; lihat DATABASE_SETUP.md.
 
 # 4. Konfigurasi backend
 cp backend/.env.example backend/.env
@@ -84,17 +85,18 @@ Probe API: `http://127.0.0.1:5173/api/candidates`.
 | `dm1`    | `chair` | `password123` | Ketua Panel           |
 | `dm2`    | `member`| `password123` | Anggota Panel 1       |
 | `dm3`    | `member`| `password123` | Anggota Panel 2       |
-| `voter1` | `voter` | `password123` | Pemilih (bisa daftar) |
+
+Seed hanya menyediakan tiga akun resmi. Akun registrasi tambahan berperan `voter` (pengamat), tanpa hak menentukan konsensus panel. Password demo fiktif ini hanya untuk lokal.
 
 **Workflow:**
 1. **DM (chair/member)** login → isi penilaian 12 item (3 kandidat × 4 kriteria, skala 1–5) → **Finalisasi** masing-masing.
 2. Lihat hasil **SAW individual** & **Borda agregasi** (dihitung backend, frontend hanya tampil).
 3. **Ketua (chair)** buka sesi **Voting** setelah 3 DM final.
-4. Semua **DM + Voter** terdaftar memilih **1 suara per putaran**.
-5. Mayoritas **> 50%** → pemenang. **Seri** → Ketua buka **Revote**.
+4. Hanya **dm1, dm2, dm3** memilih **1 suara yang tidak dapat diubah per putaran**. Voter tidak termasuk electorate.
+5. Setelah tiga suara terkumpul, mayoritas minimal **2 dari 3** → pemenang. **1–1–1** → Ketua membuka putaran baru; putaran lama dipertahankan.
 6. Ketua **mengesahkan** hasil mayoritas → **Keputusan Final**.
 7. Ketua dapat membuka **Log Aktivitas** (`/audit-logs`, khusus `chair`) dan mencetak **Berita Acara Keputusan Resmi** dari halaman Keputusan Final.
-8. **Registrasi pemilih**: publik daftar via `/register` (backend validasi username unik, role `voter` otomatis).
+8. **Registrasi pengamat**: `/register` menghasilkan role `voter` otomatis, bukan decision maker dan tidak berhak memberi suara resmi.
 
 ---
 
@@ -135,16 +137,18 @@ Probe API: `http://127.0.0.1:5173/api/candidates`.
 # Frontend
 cd frontend
 npm ci
-npm test              # 97 test passing
+npm test              # jumlah aktual: lihat TEST_RESULTS.md
 npx tsc --noEmit      # TypeScript check
 npm run build         # production build
 
 # Backend regression (SQLite in-memory, tidak sentuh DB aplikasi)
 cd ..\backend
-C:/xampp/php/php.exe tests/run.php   # 66 test passing
+C:/xampp/php/php.exe tests/run.php
+# MariaDB terisolasi 3307 (bukan database utama):
+C:/xampp/php/php.exe tests/mariadb_fresh_test.php
 ```
 
-Hasil final: backend **66/66 PASS**, frontend **97/97 PASS**, TypeScript **PASS**, production build **PASS**, PHP syntax **PASS**.
+Hasil baseline sumber: backend 66/66 dan frontend 97/97. Hasil revisi terbaru, cakupan MariaDB/HTTP, dan keterbatasan tercatat di **TEST_RESULTS.md**; jangan menganggap laporan historis sebagai hasil source terbaru.
 
 ---
 
@@ -172,7 +176,7 @@ Detail lengkap: [`PHASE_6_IMPLEMENTATION_REPORT.md`](PHASE_6_IMPLEMENTATION_REPO
 - Bearer token (bukan cookie). Logout hapus token klien; token terbit tetap valid sampai expired.
 - `GET /api/audit-logs` hanya untuk `chair`; `member`/`voter` ditolak 403, tanpa token ditolak 401.
 - HTTPS, revocation, hardening produksi **belum dicakup**.
-- Endpoint publik: kandidat, kriteria, keputusan. **Simulator akademik, bukan sistem produksi**.
+- Data aplikasi memerlukan autentikasi sesuai route dan role. Registrasi/login terbuka; voter bukan electorate resmi. **Simulator akademik, bukan sistem produksi**.
 
 ---
 

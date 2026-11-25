@@ -570,13 +570,19 @@ final class App
     {
         $u = $this->chair($user);
         $sid = $this->resolveSessionId($sessionId);
-        $session = $this->one('SELECT status FROM decision_sessions WHERE id = ?', [$sid]);
+        $session = $this->lockSession($sid);
         $this->bad($session === null, 404, 'Sesi pemilihan tidak ditemukan.');
         $this->bad(
             $session['status'] !== 'assessment',
             409,
             'Master data hanya dapat dikelola sebelum proses penilaian dimulai.'
         );
+        if ($table !== null && $id === null) {
+            $set = $this->one("SELECT COUNT(*) AS total, COALESCE(SUM(is_finalized), 0) AS fin FROM {$table} WHERE session_id = ?", [$sid]);
+            $this->bad((int)$set['total'] > 0 && (int)$set['total'] === (int)$set['fin'], 409, 'Master data sudah difinalisasi dan tidak dapat ditambah.');
+            $used = (int)$this->one('SELECT COUNT(*) AS n FROM assessments WHERE session_id = ?', [$sid])['n'];
+            $this->bad($used > 0, 409, 'Master data sudah dipakai penilaian dan tidak dapat ditambah.');
+        }
         if ($table !== null && $id !== null) {
             $row = $this->one("SELECT is_finalized FROM {$table} WHERE id = ? AND session_id = ?", [$id, $sid]);
             $this->bad($row === null, 404, 'Data tidak ditemukan pada sesi ini.');
@@ -618,134 +624,163 @@ final class App
 
     public function createCriterion(?array $user, array $body, ?string $ip = null, ?int $sessionId = null): array
     {
-        [$u, $sid] = $this->masterGuard($user, $sessionId);
-        $name = $this->textInput($body['name'] ?? null, 120, 'Nama kriteria');
-        $this->bad($name === null, 422, 'Nama kriteria wajib diisi.');
-        $description = $this->textInput($body['description'] ?? null, 1000, 'Deskripsi kriteria');
-        $weight = $this->weightInput($body['weight'] ?? null);
-        $type = (string)($body['type'] ?? 'benefit');
-        $this->bad(!in_array($type, ['benefit', 'cost'], true), 422, 'Tipe kriteria harus benefit atau cost.');
-        $this->bad($this->criteriaTotal($sid) + $weight > 100, 422, 'Total bobot tidak boleh melebihi 100%.');
+        return $this->transaction(function () use ($user, $body, $ip, $sessionId) {
+            [$u, $sid] = $this->masterGuard($user, $sessionId, 'criteria');
+            $name = $this->textInput($body['name'] ?? null, 120, 'Nama kriteria');
+            $this->bad($name === null, 422, 'Nama kriteria wajib diisi.');
+            $description = $this->textInput($body['description'] ?? null, 1000, 'Deskripsi kriteria');
+            $weight = $this->weightInput($body['weight'] ?? null);
+            $type = (string)($body['type'] ?? 'benefit');
+            $this->bad(!in_array($type, ['benefit', 'cost'], true), 422, 'Tipe kriteria harus benefit atau cost.');
+            $this->bad($this->criteriaTotal($sid) + $weight > 100, 422, 'Total bobot tidak boleh melebihi 100%.');
 
-        $code = $this->nextCriterionCode();
-        $this->exec(
-            'INSERT INTO criteria (session_id, code, name, description, weight, type, is_finalized) VALUES (?, ?, ?, ?, ?, ?, 0)',
-            [$sid, $code, $name, $description, $weight, $type]
-        );
-        $id = (int)$this->db->lastInsertId();
-        $this->audit((int)$u['id'], 'criterion_create', "Kriteria {$code} \"{$name}\" ditambahkan ({$weight}%, {$type}).", $sid, $ip);
-        return ['id' => $id, 'code' => $code, 'message' => 'Kriteria berhasil ditambahkan.'];
+            $code = $this->nextCriterionCode();
+            $this->exec(
+                'INSERT INTO criteria (session_id, code, name, description, weight, type, is_finalized) VALUES (?, ?, ?, ?, ?, ?, 0)',
+                [$sid, $code, $name, $description, $weight, $type]
+            );
+            $id = (int)$this->db->lastInsertId();
+            $this->audit((int)$u['id'], 'criterion_create', "Kriteria {$code} \"{$name}\" ditambahkan ({$weight}%, {$type}).", $sid, $ip);
+            return ['id' => $id, 'code' => $code, 'message' => 'Kriteria berhasil ditambahkan.'];
+        });
     }
 
     public function updateCriterion(?array $user, int $id, array $body, ?string $ip = null, ?int $sessionId = null): array
     {
-        [$u, $sid] = $this->masterGuard($user, $sessionId, 'criteria', $id);
-        $current = $this->one('SELECT * FROM criteria WHERE id = ? AND session_id = ?', [$id, $sid]);
-        $name = $this->textInput($body['name'] ?? null, 120, 'Nama kriteria');
-        $this->bad($name === null, 422, 'Nama kriteria wajib diisi.');
-        $description = $this->textInput($body['description'] ?? null, 1000, 'Deskripsi kriteria');
-        $weight = $this->weightInput($body['weight'] ?? null);
-        $type = (string)($body['type'] ?? $current['type']);
-        $this->bad(!in_array($type, ['benefit', 'cost'], true), 422, 'Tipe kriteria harus benefit atau cost.');
-        $newTotal = $this->criteriaTotal($sid) - (int)$current['weight'] + $weight;
-        $this->bad($newTotal > 100, 422, 'Total bobot tidak boleh melebihi 100%.');
+        return $this->transaction(function () use ($user, $id, $body, $ip, $sessionId) {
+            [$u, $sid] = $this->masterGuard($user, $sessionId, 'criteria', $id);
+            $current = $this->one('SELECT * FROM criteria WHERE id = ? AND session_id = ?', [$id, $sid]);
+            $name = $this->textInput($body['name'] ?? null, 120, 'Nama kriteria');
+            $this->bad($name === null, 422, 'Nama kriteria wajib diisi.');
+            $description = $this->textInput($body['description'] ?? null, 1000, 'Deskripsi kriteria');
+            $weight = $this->weightInput($body['weight'] ?? null);
+            $type = (string)($body['type'] ?? $current['type']);
+            $this->bad(!in_array($type, ['benefit', 'cost'], true), 422, 'Tipe kriteria harus benefit atau cost.');
+            $newTotal = $this->criteriaTotal($sid) - (int)$current['weight'] + $weight;
+            $this->bad($newTotal > 100, 422, 'Total bobot tidak boleh melebihi 100%.');
 
-        $this->exec(
-            'UPDATE criteria SET name = ?, description = ?, weight = ?, type = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND session_id = ?',
-            [$name, $description, $weight, $type, $id, $sid]
-        );
-        $this->audit((int)$u['id'], 'criterion_update', "Kriteria #{$id} diperbarui menjadi {$weight}% ({$type}).", $sid, $ip);
-        return ['id' => $id, 'message' => 'Kriteria berhasil diperbarui.'];
+            $this->exec(
+                'UPDATE criteria SET name = ?, description = ?, weight = ?, type = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND session_id = ?',
+                [$name, $description, $weight, $type, $id, $sid]
+            );
+            $this->audit((int)$u['id'], 'criterion_update', "Kriteria #{$id} diperbarui menjadi {$weight}% ({$type}).", $sid, $ip);
+            return ['id' => $id, 'message' => 'Kriteria berhasil diperbarui.'];
+        });
     }
 
     public function deleteCriterion(?array $user, int $id, ?string $ip = null, ?int $sessionId = null): array
     {
-        [$u, $sid] = $this->masterGuard($user, $sessionId, 'criteria', $id);
-        $this->exec('DELETE FROM criteria WHERE id = ? AND session_id = ?', [$id, $sid]);
-        $this->audit((int)$u['id'], 'criterion_delete', "Kriteria #{$id} dihapus.", $sid, $ip);
-        return ['id' => $id, 'message' => 'Kriteria berhasil dihapus.'];
+        return $this->transaction(function () use ($user, $id, $ip, $sessionId) {
+            [$u, $sid] = $this->masterGuard($user, $sessionId, 'criteria', $id);
+            $this->exec('DELETE FROM criteria WHERE id = ? AND session_id = ?', [$id, $sid]);
+            $this->audit((int)$u['id'], 'criterion_delete', "Kriteria #{$id} dihapus.", $sid, $ip);
+            return ['id' => $id, 'message' => 'Kriteria berhasil dihapus.'];
+        });
     }
 
     public function finalizeCriteria(?array $user, ?string $ip = null, ?int $sessionId = null): array
     {
-        [$u, $sid] = $this->masterGuard($user, $sessionId);
-        $rows = $this->all('SELECT weight, is_finalized FROM criteria WHERE session_id = ?', [$sid]);
-        $this->bad(count($rows) < 1, 422, 'Minimal harus ada satu kriteria sebelum finalisasi.');
-        $this->bad((bool)$rows[0]['is_finalized'], 409, 'Kriteria sudah difinalisasi.');
-        $total = array_sum(array_column($rows, 'weight'));
-        $this->bad($total !== 100, 422, 'Total bobot harus tepat 100% sebelum finalisasi.');
-        $used = (int)$this->one('SELECT COUNT(*) AS n FROM assessments WHERE session_id = ?', [$sid])['n'];
-        $this->bad($used > 0, 409, 'Kriteria sudah dipakai penilaian dan tidak dapat difinalisasi ulang.');
-        $this->exec('UPDATE criteria SET is_finalized = 1, updated_at = CURRENT_TIMESTAMP WHERE session_id = ?', [$sid]);
-        $this->audit((int)$u['id'], 'criteria_finalize', "Kriteria sesi #{$sid} difinalisasi (total 100%).", $sid, $ip);
-        return ['session_id' => $sid, 'count' => count($rows), 'message' => 'Kriteria berhasil difinalisasi.'];
+        return $this->transaction(function () use ($user, $ip, $sessionId) {
+            [$u, $sid] = $this->masterGuard($user, $sessionId);
+            $rows = $this->all('SELECT weight, is_finalized FROM criteria WHERE session_id = ?', [$sid]);
+            $this->bad(count($rows) < 1, 422, 'Minimal harus ada satu kriteria sebelum finalisasi.');
+            $this->bad((bool)$rows[0]['is_finalized'], 409, 'Kriteria sudah difinalisasi.');
+            $total = array_sum(array_column($rows, 'weight'));
+            $this->bad($total !== 100, 422, 'Total bobot harus tepat 100% sebelum finalisasi.');
+            $used = (int)$this->one('SELECT COUNT(*) AS n FROM assessments WHERE session_id = ?', [$sid])['n'];
+            $this->bad($used > 0, 409, 'Kriteria sudah dipakai penilaian dan tidak dapat difinalisasi ulang.');
+            $this->exec('UPDATE criteria SET is_finalized = 1, updated_at = CURRENT_TIMESTAMP WHERE session_id = ?', [$sid]);
+            $this->audit((int)$u['id'], 'criteria_finalize', "Kriteria sesi #{$sid} difinalisasi (total 100%).", $sid, $ip);
+            return ['session_id' => $sid, 'count' => count($rows), 'message' => 'Kriteria berhasil difinalisasi.'];
+        });
     }
 
     /* ---------- Phase 5: Candidate nomination ---------- */
 
     public function createCandidate(?array $user, array $body, ?string $ip = null, ?int $sessionId = null): array
     {
-        [$u, $sid] = $this->masterGuard($user, $sessionId);
-        $name = $this->textInput($body['name'] ?? null, 100, 'Nama kandidat');
-        $this->bad($name === null, 422, 'Nama kandidat wajib diisi.');
-        $profile = $this->textInput($body['profile'] ?? null, 2000, 'Profil kandidat');
-        $description = $this->textInput($body['description'] ?? null, 2000, 'Deskripsi kandidat');
-        $vision = $this->textInput($body['vision'] ?? null, 2000, 'Visi kandidat');
-        $mission = $this->textInput($body['mission'] ?? null, 2000, 'Misi kandidat');
-        $program = $this->textInput($body['work_program'] ?? null, 2000, 'Program kerja kandidat');
+        return $this->transaction(function () use ($user, $body, $ip, $sessionId) {
+            [$u, $sid] = $this->masterGuard($user, $sessionId, 'candidates');
+            $name = $this->textInput($body['name'] ?? null, 100, 'Nama kandidat');
+            $this->bad($name === null, 422, 'Nama kandidat wajib diisi.');
+            $profile = $this->textInput($body['profile'] ?? null, 2000, 'Profil kandidat');
+            $description = $this->textInput($body['description'] ?? null, 2000, 'Deskripsi kandidat');
+            $vision = $this->textInput($body['vision'] ?? null, 2000, 'Visi kandidat');
+            $mission = $this->textInput($body['mission'] ?? null, 2000, 'Misi kandidat');
+            $program = $this->textInput($body['work_program'] ?? null, 2000, 'Program kerja kandidat');
 
-        $this->exec(
-            'INSERT INTO candidates (session_id, name, description, vision, mission, work_program, profile, is_finalized) VALUES (?, ?, ?, ?, ?, ?, ?, 0)',
-            [$sid, $name, $description, $vision, $mission, $program, $profile]
-        );
-        $id = (int)$this->db->lastInsertId();
-        $this->audit((int)$u['id'], 'candidate_create', "Kandidat \"{$name}\" diajukan.", $sid, $ip);
-        return ['id' => $id, 'message' => 'Kandidat berhasil diajukan.'];
+            $this->exec(
+                'INSERT INTO candidates (session_id, name, description, vision, mission, work_program, profile, is_finalized) VALUES (?, ?, ?, ?, ?, ?, ?, 0)',
+                [$sid, $name, $description, $vision, $mission, $program, $profile]
+            );
+            $id = (int)$this->db->lastInsertId();
+            $this->audit((int)$u['id'], 'candidate_create', "Kandidat \"{$name}\" diajukan.", $sid, $ip);
+            return ['id' => $id, 'message' => 'Kandidat berhasil diajukan.'];
+        });
     }
 
     public function updateCandidate(?array $user, int $id, array $body, ?string $ip = null, ?int $sessionId = null): array
     {
-        [$u, $sid] = $this->masterGuard($user, $sessionId, 'candidates', $id);
-        $name = $this->textInput($body['name'] ?? null, 100, 'Nama kandidat');
-        $this->bad($name === null, 422, 'Nama kandidat wajib diisi.');
-        $profile = $this->textInput($body['profile'] ?? null, 2000, 'Profil kandidat');
-        $description = $this->textInput($body['description'] ?? null, 2000, 'Deskripsi kandidat');
-        $vision = $this->textInput($body['vision'] ?? null, 2000, 'Visi kandidat');
-        $mission = $this->textInput($body['mission'] ?? null, 2000, 'Misi kandidat');
-        $program = $this->textInput($body['work_program'] ?? null, 2000, 'Program kerja kandidat');
+        return $this->transaction(function () use ($user, $id, $body, $ip, $sessionId) {
+            [$u, $sid] = $this->masterGuard($user, $sessionId, 'candidates', $id);
+            $name = $this->textInput($body['name'] ?? null, 100, 'Nama kandidat');
+            $this->bad($name === null, 422, 'Nama kandidat wajib diisi.');
+            $profile = $this->textInput($body['profile'] ?? null, 2000, 'Profil kandidat');
+            $description = $this->textInput($body['description'] ?? null, 2000, 'Deskripsi kandidat');
+            $vision = $this->textInput($body['vision'] ?? null, 2000, 'Visi kandidat');
+            $mission = $this->textInput($body['mission'] ?? null, 2000, 'Misi kandidat');
+            $program = $this->textInput($body['work_program'] ?? null, 2000, 'Program kerja kandidat');
 
-        $this->exec(
-            'UPDATE candidates SET name = ?, description = ?, vision = ?, mission = ?, work_program = ?, profile = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND session_id = ?',
-            [$name, $description, $vision, $mission, $program, $profile, $id, $sid]
-        );
-        $this->audit((int)$u['id'], 'candidate_update', "Kandidat #{$id} diperbarui.", $sid, $ip);
-        return ['id' => $id, 'message' => 'Kandidat berhasil diperbarui.'];
+            $this->exec(
+                'UPDATE candidates SET name = ?, description = ?, vision = ?, mission = ?, work_program = ?, profile = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND session_id = ?',
+                [$name, $description, $vision, $mission, $program, $profile, $id, $sid]
+            );
+            $this->audit((int)$u['id'], 'candidate_update', "Kandidat #{$id} diperbarui.", $sid, $ip);
+            return ['id' => $id, 'message' => 'Kandidat berhasil diperbarui.'];
+        });
     }
 
     public function deleteCandidate(?array $user, int $id, ?string $ip = null, ?int $sessionId = null): array
     {
-        [$u, $sid] = $this->masterGuard($user, $sessionId, 'candidates', $id);
-        $this->exec('DELETE FROM candidates WHERE id = ? AND session_id = ?', [$id, $sid]);
-        $this->audit((int)$u['id'], 'candidate_delete', "Kandidat #{$id} dihapus.", $sid, $ip);
-        return ['id' => $id, 'message' => 'Kandidat berhasil dihapus.'];
+        return $this->transaction(function () use ($user, $id, $ip, $sessionId) {
+            [$u, $sid] = $this->masterGuard($user, $sessionId, 'candidates', $id);
+            $this->exec('DELETE FROM candidates WHERE id = ? AND session_id = ?', [$id, $sid]);
+            $this->audit((int)$u['id'], 'candidate_delete', "Kandidat #{$id} dihapus.", $sid, $ip);
+            return ['id' => $id, 'message' => 'Kandidat berhasil dihapus.'];
+        });
     }
 
     public function verifyCandidate(?array $user, int $id, ?string $ip = null, ?int $sessionId = null): array
     {
-        [$u, $sid] = $this->masterGuard($user, $sessionId, 'candidates', $id);
-        $this->exec('UPDATE candidates SET is_finalized = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND session_id = ?', [$id, $sid]);
-        $this->audit((int)$u['id'], 'candidate_verify', "Kandidat #{$id} diverifikasi.", $sid, $ip);
-        return ['id' => $id, 'message' => 'Kandidat berhasil diverifikasi.'];
+        return $this->transaction(function () use ($user, $id, $ip, $sessionId) {
+            [$u, $sid] = $this->masterGuard($user, $sessionId, 'candidates', $id);
+            $this->exec('UPDATE candidates SET is_finalized = 1, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND session_id = ?', [$id, $sid]);
+            $this->audit((int)$u['id'], 'candidate_verify', "Kandidat #{$id} diverifikasi.", $sid, $ip);
+            return ['id' => $id, 'message' => 'Kandidat berhasil diverifikasi.'];
+        });
     }
 
     public function finalizeCandidates(?array $user, ?string $ip = null, ?int $sessionId = null): array
     {
-        [$u, $sid] = $this->masterGuard($user, $sessionId);
-        $count = (int)$this->one('SELECT COUNT(*) AS n FROM candidates WHERE session_id = ?', [$sid])['n'];
-        $this->bad($count < 1, 422, 'Minimal harus ada satu kandidat sebelum finalisasi.');
-        $this->exec('UPDATE candidates SET is_finalized = 1, updated_at = CURRENT_TIMESTAMP WHERE session_id = ?', [$sid]);
-        $this->audit((int)$u['id'], 'candidates_finalize', "Kandidat sesi #{$sid} difinalisasi ({$count} kandidat).", $sid, $ip);
-        return ['session_id' => $sid, 'count' => $count, 'message' => 'Kandidat berhasil difinalisasi.'];
+        return $this->transaction(function () use ($user, $ip, $sessionId) {
+            [$u, $sid] = $this->masterGuard($user, $sessionId);
+            $count = (int)$this->one('SELECT COUNT(*) AS n FROM candidates WHERE session_id = ?', [$sid])['n'];
+            $this->bad($count < 1, 422, 'Minimal harus ada satu kandidat sebelum finalisasi.');
+            $this->exec('UPDATE candidates SET is_finalized = 1, updated_at = CURRENT_TIMESTAMP WHERE session_id = ?', [$sid]);
+            $this->audit((int)$u['id'], 'candidates_finalize', "Kandidat sesi #{$sid} difinalisasi ({$count} kandidat).", $sid, $ip);
+            return ['session_id' => $sid, 'count' => $count, 'message' => 'Kandidat berhasil difinalisasi.'];
+        });
+    }
+
+    private function officialAssessor(?array $user): array
+    {
+        $u = $this->actor($user);
+        $this->bad(
+            (self::OFFICIAL_ELECTORATE[$u['username']] ?? null) !== $u['role'],
+            403,
+            'Akses ditolak. Hanya DM1, DM2, dan DM3 resmi yang dapat mengakses penilaian.'
+        );
+        return $u;
     }
 
     /**
@@ -754,7 +789,7 @@ final class App
     public function getAssessmentsMe(?array $user, ?int $sessionId = null): array
     {
         $sessionId = $this->resolveSessionId($sessionId);
-        $u = $this->actor($user);
+        $u = $this->officialAssessor($user);
         $this->bad(
             !in_array($u['role'], ['chair', 'member'], true),
             403,
@@ -788,7 +823,7 @@ final class App
     public function saveAssessmentsMe(?array $user, array $items, ?int $sessionId = null): array
     {
         $sessionId = $this->resolveSessionId($sessionId);
-        $u = $this->actor($user);
+        $u = $this->officialAssessor($user);
         $this->bad(
             !in_array($u['role'], ['chair', 'member'], true),
             403,
@@ -896,7 +931,7 @@ final class App
     public function finalizeAssessmentsMe(?array $user, ?int $sessionId = null): array
     {
         $sessionId = $this->resolveSessionId($sessionId);
-        $u = $this->actor($user);
+        $u = $this->officialAssessor($user);
         $this->bad(
             !in_array($u['role'], ['chair', 'member'], true),
             403,
@@ -910,6 +945,7 @@ final class App
                 'Tahap penilaian sudah ditutup.'
             );
 
+            $this->bad(!$this->masterFinalized($sessionId), 409, 'Kriteria dan kandidat wajib disiapkan dan difinalisasi sebelum finalisasi penilaian.');
             $expectedCount = count($this->listCandidates(null, $sessionId)) * count($this->listCriteria(null, $sessionId));
             $actualCount = (int)$this->one(
                 'SELECT COUNT(*) n FROM assessments WHERE session_id = ? AND user_id = ?',
@@ -961,11 +997,11 @@ final class App
     public function getAssessmentsStatus(?int $sessionId = null): array
     {
         $sessionId = $this->resolveSessionId($sessionId);
-        // Panel penilai hanya terdiri dari Ketua dan Anggota; pemilih publik (voter)
-        // tidak mengisi penilaian dan tidak boleh memblokir pembukaan voting.
+        $officialIds = array_column($this->officialElectorate(), 'id');
+        $placeholders = implode(', ', array_fill(0, count($officialIds), '?'));
         $users = $this->all(
-            'SELECT id, username, name, role FROM users WHERE role IN ("chair", "member") ORDER BY id',
-            []
+            "SELECT id, username, name, role FROM users WHERE id IN ({$placeholders}) ORDER BY id",
+            $officialIds
         );
         $statuses = $this->all(
             'SELECT user_id, is_finalized, finalized_at FROM assessment_status WHERE session_id = ?',
@@ -1005,7 +1041,7 @@ final class App
     public function calculateSawMe(?array $user, ?int $sessionId = null): array
     {
         $sessionId = $this->resolveSessionId($sessionId);
-        $u = $this->actor($user);
+        $u = $this->officialAssessor($user);
         $this->bad(
             !in_array($u['role'], ['chair', 'member'], true),
             403,
@@ -1068,12 +1104,10 @@ final class App
 
         $candidates = $this->listCandidates(null, $sessionId);
         $criteria = $this->listCriteria(null, $sessionId);
-        // Hanya Ketua dan Anggota Panel yang menilai; pemilih publik tidak memiliki
-        // penilaian dan tidak boleh masuk ke agregasi Borda.
-        $users = $this->all(
-            'SELECT id, name FROM users WHERE role IN ("chair", "member") ORDER BY id',
-            []
-        );
+        $users = array_map(fn(array $panelist) => [
+            'id' => $panelist['user_id'],
+            'name' => $panelist['name'],
+        ], $panelStatus['panel']);
 
         $dmScores = [];
         foreach ($users as $usr) {
@@ -1248,6 +1282,7 @@ final class App
                 'Sesi voting hanya dapat dibuka saat sesi berstatus assessment.'
             );
 
+            $this->bad(!$this->masterFinalized($sessionId), 409, 'Kriteria dan kandidat wajib disiapkan dan difinalisasi sebelum voting.');
             $status = $this->getAssessmentsStatus($sessionId);
             $this->bad(
                 !$status['all_finalized'],

@@ -2,8 +2,7 @@
 -- Engine: MySQL 8.0+ / MariaDB 10.4+
 -- Database: gdss_pemilihan_presiden
 
-CREATE DATABASE IF NOT EXISTS `gdss_pemilihan_presiden` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `gdss_pemilihan_presiden`;
+-- Fresh install only: select an EMPTY database explicitly before import.
 
 -- 1. Tabel Pengguna (Decision Makers + Voters)
 CREATE TABLE IF NOT EXISTS `users` (
@@ -19,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 CREATE TABLE IF NOT EXISTS `candidates` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     -- Phase 5: data master terisolasi per sesi
-    `session_id` INT NULL,
+    `session_id` INT NOT NULL,
     `name` VARCHAR(100) NOT NULL,
     `description` TEXT NULL,
     `vision` TEXT NULL,
@@ -29,14 +28,15 @@ CREATE TABLE IF NOT EXISTS `candidates` (
     `is_finalized` TINYINT(1) NOT NULL DEFAULT 0,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NULL DEFAULT NULL,
-    KEY `idx_candidates_session` (`session_id`)
+    KEY `idx_candidates_session` (`session_id`),
+    UNIQUE KEY `uq_candidates_session_id` (`session_id`, `id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 3. Tabel Kriteria Penilaian
 CREATE TABLE IF NOT EXISTS `criteria` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     -- Phase 5: data master terisolasi per sesi
-    `session_id` INT NULL,
+    `session_id` INT NOT NULL,
     `code` VARCHAR(10) NOT NULL UNIQUE,
     `name` VARCHAR(120) NOT NULL,
     `description` TEXT NULL,
@@ -45,7 +45,8 @@ CREATE TABLE IF NOT EXISTS `criteria` (
     `is_finalized` TINYINT(1) NOT NULL DEFAULT 0,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NULL DEFAULT NULL,
-    KEY `idx_criteria_session` (`session_id`)
+    KEY `idx_criteria_session` (`session_id`),
+    UNIQUE KEY `uq_criteria_session_id` (`session_id`, `id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 4. Tabel Sesi Keputusan (Decision Sessions)
@@ -78,7 +79,10 @@ CREATE TABLE IF NOT EXISTS `assessments` (
     CONSTRAINT `fk_assessments_session` FOREIGN KEY (`session_id`) REFERENCES `decision_sessions` (`id`) ON DELETE CASCADE,
     CONSTRAINT `fk_assessments_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
     CONSTRAINT `fk_assessments_candidate` FOREIGN KEY (`candidate_id`) REFERENCES `candidates` (`id`) ON DELETE CASCADE,
-    CONSTRAINT `fk_assessments_criterion` FOREIGN KEY (`criterion_id`) REFERENCES `criteria` (`id`) ON DELETE CASCADE
+    CONSTRAINT `fk_assessments_criterion` FOREIGN KEY (`criterion_id`) REFERENCES `criteria` (`id`) ON DELETE CASCADE,
+    -- Cross-session guard: candidate/criterion must belong to the assessment's own session.
+    CONSTRAINT `fk_assessments_candidate_session` FOREIGN KEY (`session_id`, `candidate_id`) REFERENCES `candidates` (`session_id`, `id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_assessments_criterion_session` FOREIGN KEY (`session_id`, `criterion_id`) REFERENCES `criteria` (`session_id`, `id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 6. Tabel Status Finalisasi Penilaian (Assessment Status per DM)
@@ -160,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `login_attempts` (
 -- 12. Tabel Audit Trail (Audit Logs)
 CREATE TABLE IF NOT EXISTS `audit_logs` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-    `session_id` INT NULL,
+    `session_id` INT NOT NULL,
     `user_id` INT NULL,
     `action` VARCHAR(60) NOT NULL,
     `details` TEXT NOT NULL,

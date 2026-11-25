@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { User } from '@/types';
 import { api } from '@/services/api';
 
@@ -14,10 +15,19 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const queryClient = useQueryClient();
+  const generation = useRef(0);
+  const resetIdentity = useCallback(() => {
+    generation.current += 1;
+    void queryClient.cancelQueries();
+    queryClient.clear();
+  }, [queryClient]);
   const [user, setUser] = useState<User | null>(() => api.getStoredUser());
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const logout = useCallback(async () => {
+    resetIdentity();
+    setUser(null);
     try {
       if (api.getToken()) {
         await api.logout();
@@ -28,17 +38,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       api.clearSession();
       setUser(null);
     }
-  }, []);
+  }, [resetIdentity]);
 
   const refreshProfile = useCallback(async () => {
     if (!api.getToken()) {
+      resetIdentity();
       setUser(null);
       setIsLoading(false);
       return;
     }
 
+    const version = generation.current;
     try {
       const res = await api.getMe();
+      if (version !== generation.current) return;
       if (res.success && res.data) {
         setUser(res.data);
         api.setStoredUser(res.data);
@@ -46,6 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await logout();
       }
     } catch (err) {
+      if (version !== generation.current) return;
       // Hanya logout pada 401/403 — jangan logout pada error jaringan/500
       if (err instanceof Error && 'status' in err) {
         const status = (err as { status: number }).status;
@@ -57,19 +71,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  }, [logout]);
+  }, [logout, resetIdentity]);
 
   useEffect(() => {
     api.setUnauthorizedHandler(() => {
+      resetIdentity();
+      api.clearSession();
       setUser(null);
     });
     refreshProfile();
-  }, [refreshProfile]);
+    return () => api.setUnauthorizedHandler(() => {});
+  }, [refreshProfile, resetIdentity]);
 
   const login = async (username: string, password: string) => {
     // Jangan set global isLoading — biarkan komponen handle loading lokal
+    resetIdentity();
     const res = await api.login(username, password);
     if (res.success && res.data.user) {
+      resetIdentity();
       setUser(res.data.user);
     }
     // Jika gagal, error dilempar dan ditangkap caller

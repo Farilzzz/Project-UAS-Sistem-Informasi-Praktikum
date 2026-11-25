@@ -280,7 +280,7 @@ const OfficialDecisionReport: React.FC<OfficialReportProps> = ({
           Berita Acara Keputusan Resmi
         </h2>
         <p className="mt-2 text-sm text-slate-600">
-          Dokumen ini merupakan catatan resmi hasil pemilihan yang disahkan oleh panel Decision Maker.
+          Dokumen ini merupakan catatan resmi hasil pemilihan yang disahkan oleh Ketua Panel.
         </p>
       </div>
 
@@ -537,9 +537,9 @@ const OfficialDecisionReport: React.FC<OfficialReportProps> = ({
           12. Pernyataan Pengesahan &amp; Tanda Tangan
         </h3>
         <p className="mb-8 text-sm leading-relaxed text-slate-700">
-          Demikian berita acara ini dibuat untuk digunakan sebagaimana mestinya. Pengesahan dilakukan
-          secara manual oleh panelis yang namanya tercantum di bawah ini. Sistem tidak menghasilkan
-          tanda tangan digital dan tidak mengubah data keputusan selama proses cetak.
+          Demikian berita acara ini dibuat untuk digunakan sebagaimana mestinya. Hanya Ketua Panel yang mengesahkan keputusan
+                    sesuai catatan pengesahan di atas. Slot tanda tangan manual di bawah ini masih kosong dan belum ditandatangani;
+                    bukan bukti persetujuan anggota panel. Sistem tidak menghasilkan tanda tangan digital dan tidak mengubah data keputusan selama proses cetak.
         </p>
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
           {panelists.map((panelist) => (
@@ -547,7 +547,7 @@ const OfficialDecisionReport: React.FC<OfficialReportProps> = ({
               <p className="min-h-[2.5rem] text-sm font-semibold text-navy-800">{panelist.name}</p>
               <p className="mt-1 text-xs text-slate-600">{panelist.role}</p>
               <div className="mt-12 border-t border-slate-500 pt-2 text-xs text-slate-500">
-                Tanda tangan
+                Belum ditandatangani — slot tanda tangan manual
               </div>
             </div>
           ))}
@@ -625,9 +625,9 @@ export const FinalDecisionPage: React.FC = () => {
   });
 
   const sawQuery = useQuery({
-    queryKey: ['results', 'saw', 'me'],
+    queryKey: ['results', 'saw', 'me', decisionSessionId],
     queryFn: async () => {
-      const res = await api.getSawResults();
+      const res = await api.getSawResults(decisionSessionId);
       if (res.success && res.data) return res.data;
       throw new Error(res.message || 'Gagal memuat hasil SAW');
     },
@@ -636,9 +636,9 @@ export const FinalDecisionPage: React.FC = () => {
   });
 
   const bordaQuery = useQuery({
-    queryKey: ['results', 'borda'],
+    queryKey: ['results', 'borda', decisionSessionId],
     queryFn: async () => {
-      const res = await api.getBordaResults();
+      const res = await api.getBordaResults(decisionSessionId);
       if (res.success && res.data) return res.data;
       throw new Error(res.message || 'Gagal memuat hasil Borda');
     },
@@ -1037,9 +1037,9 @@ export const FinalDecisionPage: React.FC = () => {
           candidates={candidatesQuery.data ?? []}
           saw={sawQuery.data ?? null}
           borda={bordaQuery.data ?? null}
-          electorate={statusData?.electorate ?? []}
-          evaluation={evaluation}
-          statusLabel={stateView.label}
+          electorate={electionQuery.data?.voting_status.electorate ?? []}
+                    evaluation={electionQuery.data?.voting_status.evaluation ?? null}
+                    statusLabel="Keputusan Telah Disahkan"
         />
       )}
 

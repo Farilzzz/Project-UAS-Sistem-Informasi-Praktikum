@@ -220,6 +220,9 @@ export const VotingPage: React.FC = () => {
     if (statusData.session_status === 'tie_revote') {
       return 'Hasil voting seri (1-1-1). Ketua Panel dapat membuka putaran ulang.';
     }
+    if (statusData.is_voting_open && !isEligible) {
+      return 'Anda mengakses sebagai pengamat tanpa hak suara. Voting resmi hanya untuk dm1, dm2, dan dm3.';
+    }
     if (statusData.is_voting_open && !hasVoted) {
       return 'Voting sedang berlangsung. Silakan pilih kandidat Anda.';
     }
@@ -293,7 +296,7 @@ export const VotingPage: React.FC = () => {
             <AlertTriangle className="w-4 h-4" /> Anda tidak terdaftar sebagai pemilih pada sesi ini.
           </p>
           <p className="text-sm text-amber-700 mt-1">
-            Hanya pemilih yang terdaftar saat voting dibuka yang dapat memberikan suara.
+            Hanya pemilih resmi dm1, dm2, dan dm3 yang dapat memberikan suara. Akun tambahan tidak memperoleh hak suara.
           </p>
         </div>
       )}

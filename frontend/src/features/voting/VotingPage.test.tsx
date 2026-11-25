@@ -112,6 +112,8 @@ describe('VotingPage', () => {
       await screen.findByText('Anda tidak terdaftar sebagai pemilih pada sesi ini.')
     ).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Kandidat A/i })).not.toBeInTheDocument();
+    expect(screen.queryByText(/Silakan pilih kandidat Anda/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/pengamat.*tanpa hak suara/i)).toBeInTheDocument();
   });
 
   it('pemilih yang sudah memilih tidak melihat tombol voting lagi', async () => {

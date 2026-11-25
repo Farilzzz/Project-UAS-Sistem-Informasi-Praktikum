@@ -1711,6 +1711,119 @@ it('P6-3: Audit log tidak membocorkan kredensial dan tidak menulis log baru', fu
     assertTrue(strpos($serialized, 'token') === false, 'Response mengandung token');
 });
 
+function expectApiStatus(int $status, callable $fn): void
+{
+    try {
+        $fn();
+    } catch (ApiError $e) {
+        assertEquals($status, $e->httpStatus);
+        return;
+    }
+    throw new RuntimeException('Expected API rejection ' . $status);
+}
+
+it('Guard: empty or draft master cannot finalize assessments', function () {
+    foreach (['DELETE FROM candidates', 'DELETE FROM criteria', 'UPDATE candidates SET is_finalized = 0', 'UPDATE criteria SET is_finalized = 0'] as $mutation) {
+        $db = createTestDb();
+        $db->exec($mutation);
+        $app = new App($db);
+        $chair = $db->query('SELECT * FROM users WHERE id = 1')->fetch();
+        expectApiStatus(409, fn() => $app->finalizeAssessmentsMe($chair, 1));
+        assertEquals(0, (int)$db->query('SELECT COUNT(*) FROM assessment_status WHERE is_finalized = 1')->fetchColumn());
+        assertEquals(false, $db->inTransaction());
+    }
+});
+
+it('Guard: voting refuses empty or draft master despite finalized statuses', function () {
+    foreach (['DELETE FROM candidates', 'DELETE FROM criteria', 'UPDATE candidates SET is_finalized = 0', 'UPDATE criteria SET is_finalized = 0'] as $mutation) {
+        $db = createTestDb();
+        $db->exec('UPDATE assessment_status SET is_finalized = 1');
+        $db->exec($mutation);
+        $app = new App($db);
+        $chair = $db->query('SELECT * FROM users WHERE id = 1')->fetch();
+        expectApiStatus(409, fn() => $app->openVoting($chair, 1));
+        assertEquals('assessment', $db->query('SELECT status FROM decision_sessions WHERE id = 1')->fetchColumn());
+        assertEquals(0, (int)$db->query('SELECT COUNT(*) FROM voting_rounds')->fetchColumn());
+    }
+});
+
+it('Guard: finalized master sets reject additions', function () {
+    $db = createTestDb();
+    $app = new App($db);
+    $chair = $db->query('SELECT * FROM users WHERE id = 1')->fetch();
+    expectApiStatus(409, fn() => $app->createCandidate($chair, ['name' => 'Late'], null, 1));
+    // Leave space in a legacy finalized criteria set to isolate the finalization guard.
+    $db->exec('UPDATE criteria SET weight = 1');
+    expectApiStatus(409, fn() => $app->createCriterion($chair, ['name' => 'Late', 'weight' => 1], null, 1));
+});
+
+it('Guard: non-official panel account is denied assessment access', function () {
+    $db = createTestDb();
+    $db->exec("INSERT INTO users (id, username, name, role, password_hash) VALUES (9, 'extra', 'Extra Panel', 'member', 'x')");
+    $app = new App($db);
+    $member = $db->query('SELECT * FROM users WHERE id = 9')->fetch();
+    expectApiStatus(403, fn() => $app->getAssessmentsMe($member, 1));
+    expectApiStatus(403, fn() => $app->finalizeAssessmentsMe($member, 1));
+});
+
+it('Guard: official panel alone controls readiness and Borda', function () {
+    $db = createTestDb();
+    $app = new App($db);
+    $db->exec('UPDATE assessment_status SET is_finalized = 1');
+    $before = $app->calculateBorda(1);
+    $db->exec("INSERT INTO users (id, username, name, role, password_hash) VALUES (9, 'extra', 'Extra Panel', 'member', 'x')");
+    assertEquals(3, $app->getAssessmentsStatus(1)['total_panelists']);
+    assertTrue($app->getAssessmentsStatus(1)['all_finalized']);
+    assertEquals($before, $app->calculateBorda(1));
+    $extra = $db->query('SELECT * FROM users WHERE id = 9')->fetch();
+    expectApiStatus(403, fn() => $app->saveAssessmentsMe($extra, [], 1));
+    expectApiStatus(403, fn() => $app->calculateSawMe($extra, 1));
+});
+
+it('Guard: missing or wrong-role official panel fails closed', function () {
+    foreach (["UPDATE users SET username = 'former' WHERE username = 'dm3'", "UPDATE users SET role = 'voter' WHERE username = 'dm3'"] as $mutation) {
+        $db = createTestDb();
+        $db->exec('UPDATE assessment_status SET is_finalized = 1');
+        $db->exec($mutation);
+        $app = new App($db);
+        expectApiStatus(409, fn() => $app->getAssessmentsStatus(1));
+        expectApiStatus(409, fn() => $app->calculateBorda(1));
+    }
+});
+
+it('Guard: every master mutation rolls back when audit fails', function () {
+    $operations = [
+        fn($app, $chair) => $app->createCriterion($chair, ['name' => 'New', 'weight' => 1], null, 1),
+        fn($app, $chair) => $app->updateCriterion($chair, 1, ['name' => 'Changed', 'weight' => 1], null, 1),
+        fn($app, $chair) => $app->deleteCriterion($chair, 1, null, 1),
+        fn($app, $chair) => $app->finalizeCriteria($chair, null, 1),
+        fn($app, $chair) => $app->createCandidate($chair, ['name' => 'New'], null, 1),
+        fn($app, $chair) => $app->updateCandidate($chair, 1, ['name' => 'Changed'], null, 1),
+        fn($app, $chair) => $app->deleteCandidate($chair, 1, null, 1),
+        fn($app, $chair) => $app->verifyCandidate($chair, 1, null, 1),
+        fn($app, $chair) => $app->finalizeCandidates($chair, null, 1),
+    ];
+    foreach ($operations as $index => $operation) {
+        $db = createTestDb();
+        $db->exec('DELETE FROM assessments');
+        $db->exec('UPDATE criteria SET is_finalized = 0, weight = ' . ($index === 3 ? '25' : '1'));
+        $db->exec('UPDATE candidates SET is_finalized = 0');
+        $snapshot = fn() => [$db->query('SELECT * FROM criteria ORDER BY id')->fetchAll(), $db->query('SELECT * FROM candidates ORDER BY id')->fetchAll()];
+        $before = $snapshot();
+        $db->exec("CREATE TRIGGER reject_audit BEFORE INSERT ON audit_logs WHEN NEW.action <> 'master_guard_lock' BEGIN SELECT RAISE(ABORT, 'audit unavailable'); END");
+        $app = new App($db);
+        $chair = $db->query('SELECT * FROM users WHERE id = 1')->fetch();
+        try {
+            $operation($app, $chair);
+            throw new RuntimeException('Expected audit failure');
+        } catch (PDOException $e) {
+            assertTrue(str_contains($e->getMessage(), 'audit unavailable'));
+        }
+        assertEquals($before, $snapshot(), 'Mutation must roll back, operation ' . $index);
+        assertEquals(false, $db->inTransaction());
+    }
+});
+
 echo PHP_EOL . "=== RINGKASAN HASIL TEST ===" . PHP_EOL;
 echo "Total Lulus : {$passed}" . PHP_EOL;
 echo "Total Gagal : {$failed}" . PHP_EOL;

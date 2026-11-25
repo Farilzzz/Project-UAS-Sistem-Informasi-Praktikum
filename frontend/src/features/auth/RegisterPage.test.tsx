@@ -17,6 +17,12 @@ describe('RegisterPage', () => {
     registerMock.mockReset();
   });
 
+  it('menjelaskan akun tambahan sebagai pengamat tanpa hak suara', () => {
+    render(<MemoryRouter><RegisterPage /></MemoryRouter>);
+    expect(screen.getByText(/pengamat.*tanpa hak suara/i)).toBeInTheDocument();
+    expect(screen.queryByText('Daftarkan diri Anda sebagai pemilih.')).not.toBeInTheDocument();
+  });
+
   it('menolak pendaftaran jika konfirmasi password tidak cocok', async () => {
     const user = userEvent.setup();
     render(

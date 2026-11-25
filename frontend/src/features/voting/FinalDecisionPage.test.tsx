@@ -26,11 +26,11 @@ vi.mock('@/services/api', async (importOriginal) => {
       getVotingStatus: () => statusMock(),
       getFinalDecision: () => finalDecisionMock(),
       approveDecision: (reason: string) => approveMock(reason),
-      getElection: () => electionMock(),
-      getCandidates: () => candidatesMock(),
-      getCriteria: () => criteriaMock(),
-      getSawResults: () => sawMock(),
-      getBordaResults: () => bordaMock(),
+      getElection: (...args: unknown[]) => electionMock(...args),
+      getCandidates: (...args: unknown[]) => candidatesMock(...args),
+      getCriteria: (...args: unknown[]) => criteriaMock(...args),
+      getSawResults: (...args: unknown[]) => sawMock(...args),
+      getBordaResults: (...args: unknown[]) => bordaMock(...args),
     },
   };
 });
@@ -108,6 +108,29 @@ describe('FinalDecisionPage', () => {
     sawMock.mockResolvedValue({ success: true, message: 'ok', data: null });
     bordaMock.mockResolvedValue({ success: true, message: 'ok', data: null });
     window.print = vi.fn();
+  });
+
+  it('mengisolasi laporan dari sesi aktif dan mengikat hasil ke sesi keputusan', async () => {
+    statusMock.mockResolvedValue({ success: true, data: {
+      ...baseStatus,
+      electorate: [{ user_id: 2, username: 'dm2', name: 'Panel Sesi Baru', role: 'member', has_voted: false }],
+      evaluation: { status: 'majority', is_completed: true, total_votes_cast: 3, winner: null,
+        tallies: [{ candidate_id: 99, candidate_name: 'Kandidat Sesi Baru', votes: 3, percentage: 100 }] },
+    } });
+    finalDecisionMock.mockResolvedValue({ success: true, data: ratifiedDecision });
+    renderPage();
+    const report = await screen.findByTestId('official-decision-report');
+    await waitFor(() => expect(sawMock).toHaveBeenCalledWith(1));
+    expect(bordaMock).toHaveBeenCalledWith(1);
+    expect(candidatesMock).toHaveBeenCalledWith(1);
+    expect(criteriaMock).toHaveBeenCalledWith(1);
+    expect(electionMock).toHaveBeenCalledWith(1);
+    expect(report).not.toHaveTextContent('Panel Sesi Baru');
+    expect(report).not.toHaveTextContent('Kandidat Sesi Baru');
+    expect(report).not.toHaveTextContent('Voting Belum Dibuka');
+    expect(report).toHaveTextContent('Hanya Ketua Panel yang mengesahkan keputusan');
+    expect(report).toHaveTextContent('Belum ditandatangani');
+    expect(report).not.toHaveTextContent('secara manual oleh panelis');
   });
 
   it('menampilkan status voting belum dibuka dan aksi Ketua Panel', async () => {
@@ -383,6 +406,10 @@ describe('FinalDecisionPage', () => {
       },
     });
     finalDecisionMock.mockResolvedValue({ success: true, message: 'ok', data: ratifiedDecision });
+    electionMock.mockResolvedValue({ success: true, data: {
+      session: { id: 1, title: 'Siklus Lama', description: null },
+      voting_status: { ...baseStatus, session_status: 'ratified', electorate, evaluation },
+    } });
     candidatesMock.mockResolvedValue({ success: true, message: 'ok', data: candidates });
     criteriaMock.mockResolvedValue({ success: true, message: 'ok', data: criteria });
     sawMock.mockResolvedValue({ success: true, message: 'ok', data: saw });
@@ -412,7 +439,7 @@ describe('FinalDecisionPage', () => {
 
     const report = screen.getByTestId('official-decision-report');
     expect(report).toHaveTextContent('DM Satu');
-    expect(report).toHaveTextContent('DM Dua');
+    await waitFor(() => expect(report).toHaveTextContent('DM Dua'));
     expect(report).toHaveTextContent('DM Tiga');
     expect(report).not.toHaveTextContent('Nama panelis — diisi resmi');
 

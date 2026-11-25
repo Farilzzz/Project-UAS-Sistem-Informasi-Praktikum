@@ -68,6 +68,7 @@ const LOGIN_ENDPOINTS = new Set(['/login', '/auth/login']);
 export class ApiClient {
   private baseUrl: string;
   private token: string | null = null;
+  private authGeneration = 0;
   private onUnauthorizedCallback: (() => void) | null = null;
 
   constructor() {
@@ -81,6 +82,7 @@ export class ApiClient {
   }
 
   public setToken(token: string | null) {
+    this.authGeneration += 1;
     this.token = token;
     if (token) {
       sessionStorage.setItem('gdss_token', token);
@@ -97,6 +99,7 @@ export class ApiClient {
   }
 
   public clearSession() {
+    this.authGeneration += 1;
     this.token = null;
     sessionStorage.removeItem('gdss_token');
     sessionStorage.removeItem('gdss_user');
@@ -131,6 +134,7 @@ export class ApiClient {
       'Content-Type': 'application/json',
     };
 
+    const authGeneration = this.authGeneration;
     const token = this.getToken();
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
@@ -163,7 +167,7 @@ export class ApiClient {
       const isLoginEndpoint = LOGIN_ENDPOINTS.has(endpoint);
       // Hanya panggil callback unauthorized untuk endpoint BUKAN login
       // (login 401 = kredensial salah, bukan sesi kedaluwarsa)
-      if (response.status === 401 && !isLoginEndpoint) {
+      if (response.status === 401 && !isLoginEndpoint && authGeneration === this.authGeneration) {
         this.clearSession();
         if (this.onUnauthorizedCallback) {
           this.onUnauthorizedCallback();
@@ -179,7 +183,7 @@ export class ApiClient {
   // --- Auth APIs ---
   async login(username: string, password: string): Promise<ApiResponse<LoginResponseData>> {
     const res = await this.request<LoginResponseData>('POST', '/login', { username, password });
-    if (res.success && res.data.token) {
+    if (res.success && res.data) {
       this.setToken(res.data.token);
       this.setStoredUser(res.data.user);
     }
@@ -310,12 +314,14 @@ export class ApiClient {
   }
 
   // --- Results APIs ---
-  async getSawResults(): Promise<ApiResponse<SawResponse>> {
-    return this.request<SawResponse>('GET', '/results/saw/me');
+  async getSawResults(sessionId?: number): Promise<ApiResponse<SawResponse>> {
+      const qs = sessionId ? `?session_id=${sessionId}` : '';
+      return this.request<SawResponse>('GET', `/results/saw/me${qs}`);
   }
 
-  async getBordaResults(): Promise<ApiResponse<BordaResponse>> {
-    return this.request<BordaResponse>('GET', '/results/borda');
+  async getBordaResults(sessionId?: number): Promise<ApiResponse<BordaResponse>> {
+      const qs = sessionId ? `?session_id=${sessionId}` : '';
+      return this.request<BordaResponse>('GET', `/results/borda${qs}`);
   }
 
   // --- Voting APIs ---
