@@ -27,7 +27,8 @@ it.each(['replacement token', 'same token after logout'])(
     reply(new Response(JSON.stringify({ success: false, message: 'expired' }), { status: 401 }));
     await rejected;
 
-    expect(fetchMock.mock.calls[0][1]).toMatchObject({ headers: { Authorization: 'Bearer old-token' } });
+    const [, request] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    expect(request).toMatchObject({ headers: { Authorization: 'Bearer old-token' } });
     expect(client.getToken()).toBe(newToken);
     expect(sessionStorage.getItem('gdss_token')).toBe(newToken);
     expect(client.getStoredUser()).toEqual({ id: 2 });
