@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { ApiClient, ApiError } from './api';
+import { ApiClient } from './api';
 
 beforeEach(() => sessionStorage.clear());
 afterEach(() => {
